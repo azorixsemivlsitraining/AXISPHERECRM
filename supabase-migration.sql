@@ -90,6 +90,24 @@ CREATE POLICY "Enable delete for all users" ON public.salespersons
   FOR DELETE
   USING (true);
 
+-- For COMPANIES table
+CREATE POLICY "Enable insert for all users" ON public.companies
+  FOR INSERT
+  WITH CHECK (true);
+
+CREATE POLICY "Enable select for all users" ON public.companies
+  FOR SELECT
+  USING (true);
+
+CREATE POLICY "Enable update for all users" ON public.companies
+  FOR UPDATE
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "Enable delete for all users" ON public.companies
+  FOR DELETE
+  USING (true);
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_leads_created_at ON public.leads(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_leads_company ON public.leads(company);
