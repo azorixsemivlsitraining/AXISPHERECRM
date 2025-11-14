@@ -20,6 +20,9 @@ export const handleApolloProxy: RequestHandler = async (req, res) => {
       });
     }
 
+    console.log(`[Apollo Proxy] Calling ${method} ${APOLLO_BASE_URL}${endpoint}`);
+    console.log(`[Apollo Proxy] API Key set: ${APOLLO_API_KEY ? "yes" : "no"}`);
+
     const headers: HeadersInit = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${APOLLO_API_KEY}`,
@@ -35,16 +38,29 @@ export const handleApolloProxy: RequestHandler = async (req, res) => {
     }
 
     const response = await fetch(`${APOLLO_BASE_URL}${endpoint}`, options);
+    const responseText = await response.text();
 
+    console.log(`[Apollo Proxy] Response status: ${response.status}`);
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      console.error(`[Apollo Proxy] Error response: ${responseText}`);
+      let errorData;
+      try {
+        errorData = JSON.parse(responseText);
+      } catch {
+        errorData = { message: responseText };
+      }
       return res.status(response.status).json({
         error: `Apollo API error: ${response.status}`,
         details: errorData,
       });
     }
 
-    const data = await response.json();
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      data = responseText;
+    }
     res.json(data);
   } catch (error) {
     console.error("Apollo proxy error:", error);
