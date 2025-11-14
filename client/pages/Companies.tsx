@@ -44,13 +44,35 @@ export default function Companies() {
   const loadMyCompanies = async () => {
     try {
       setIsLoadingMyCompanies(true);
-      const companies = await getCompanies();
-      setMyCompanies(companies);
+      const apolloCompanies = await getSavedCompanies();
+
+      const mappedCompanies: Company[] = apolloCompanies.map((apolloCompany, index) => ({
+        id: apolloCompany.id || `apollo-${index}`,
+        apolloId: apolloCompany.id,
+        name: apolloCompany.name,
+        domain: apolloCompany.domain,
+        industry: apolloCompany.industry,
+        employeeCount: apolloCompany.employee_count,
+        employeeCountRange: apolloCompany.employee_count_range,
+        revenue: apolloCompany.revenue,
+        revenueRange: apolloCompany.revenue_range,
+        logoUrl: apolloCompany.logo_url,
+        linkedinUrl: apolloCompany.linkedin_url,
+        crunchbaseUrl: apolloCompany.crunchbase_url,
+        foundedYear: apolloCompany.founded_year,
+        hqAddress: apolloCompany.hq_address,
+        countries: apolloCompany.countries,
+        website: apolloCompany.website,
+        phone: apolloCompany.phone,
+        createdAt: new Date().toISOString(),
+      }));
+
+      setMyCompanies(mappedCompanies);
     } catch (error) {
-      console.error("Error loading companies:", error);
+      console.error("Error loading saved companies from Apollo:", error);
       toast({
         title: "Error",
-        description: "Failed to load your companies",
+        description: "Failed to load your saved companies from Apollo.io",
         variant: "destructive",
       });
     } finally {
