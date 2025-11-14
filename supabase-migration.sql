@@ -26,6 +26,29 @@ CREATE TABLE IF NOT EXISTS public.salespersons (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Create COMPANIES table
+CREATE TABLE IF NOT EXISTS public.companies (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  apollo_id TEXT UNIQUE,
+  name TEXT NOT NULL,
+  domain TEXT,
+  industry TEXT,
+  employee_count INTEGER,
+  employee_count_range TEXT,
+  revenue BIGINT,
+  revenue_range TEXT,
+  logo_url TEXT,
+  linkedin_url TEXT,
+  crunchbase_url TEXT,
+  founded_year INTEGER,
+  hq_address TEXT,
+  countries TEXT[],
+  website TEXT,
+  phone TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Enable RLS (Row Level Security)
 ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.salespersons ENABLE ROW LEVEL SECURITY;
