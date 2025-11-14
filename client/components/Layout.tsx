@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Users, UserCheck, BarChart3 } from "lucide-react";
+import { Users, UserCheck, BarChart3, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface LayoutProps {
@@ -13,6 +13,7 @@ export function MainLayout({ children }: LayoutProps) {
     { path: "/", label: "Dashboard", icon: BarChart3 },
     { path: "/leads", label: "Leads", icon: Users },
     { path: "/salespersons", label: "Sales Persons", icon: UserCheck },
+    { path: "/companies", label: "Companies", icon: Building2 },
   ];
 
   return (
