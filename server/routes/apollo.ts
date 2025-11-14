@@ -1,11 +1,12 @@
 import { RequestHandler } from "express";
 
-const APOLLO_API_KEY = process.env.VITE_APOLLO_API_KEY;
 const APOLLO_BASE_URL = "https://api.apollo.io/v1";
 
 export const handleApolloProxy: RequestHandler = async (req, res) => {
   try {
+    const APOLLO_API_KEY = process.env.VITE_APOLLO_API_KEY;
     if (!APOLLO_API_KEY) {
+      console.error("Missing VITE_APOLLO_API_KEY environment variable");
       return res.status(500).json({
         error: "Apollo API key not configured",
       });
