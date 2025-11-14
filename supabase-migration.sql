@@ -114,3 +114,7 @@ CREATE INDEX IF NOT EXISTS idx_leads_company ON public.leads(company);
 CREATE INDEX IF NOT EXISTS idx_leads_email ON public.leads(email);
 CREATE INDEX IF NOT EXISTS idx_salespersons_created_at ON public.salespersons(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_salespersons_email ON public.salespersons(email);
+CREATE INDEX IF NOT EXISTS idx_companies_created_at ON public.companies(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_companies_apollo_id ON public.companies(apollo_id);
+CREATE INDEX IF NOT EXISTS idx_companies_name ON public.companies(name);
+CREATE INDEX IF NOT EXISTS idx_companies_industry ON public.companies(industry);
