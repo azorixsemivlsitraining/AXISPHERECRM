@@ -9,7 +9,7 @@ export async function getLeads(): Promise<Lead[]> {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching leads:", error);
+    console.error("Error fetching leads:", error.message, error);
     return [];
   }
 
@@ -116,7 +116,7 @@ export async function getSalespersons(): Promise<Salesperson[]> {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching salespersons:", error);
+    console.error("Error fetching salespersons:", error.message, error);
     return [];
   }
 
