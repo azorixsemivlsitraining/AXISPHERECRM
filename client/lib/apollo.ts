@@ -99,12 +99,13 @@ export async function getSavedCompanies(
   page: number = 1,
 ): Promise<ApolloCompany[]> {
   try {
-    const response = await callApolloAPI("/organizations", "POST", {
+    const response = await callApolloAPI("/bookmarks", "POST", {
       limit,
       page,
+      type: "organization",
     });
 
-    const organizations = response.organizations || response.accounts || [];
+    const organizations = response.bookmarks || response.organizations || [];
 
     if (organizations.length === 0) {
       console.log("No saved companies found in Apollo");
