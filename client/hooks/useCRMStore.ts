@@ -1,4 +1,14 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import {
+  getLeads,
+  addLead as supabaseAddLead,
+  updateLead as supabaseUpdateLead,
+  deleteLead as supabaseDeleteLead,
+  getSalespersons,
+  addSalesperson as supabaseAddSalesperson,
+  updateSalesperson as supabaseUpdateSalesperson,
+  deleteSalesperson as supabaseDeleteSalesperson,
+} from "@/lib/supabase-db";
 
 export interface Lead {
   id: string;
@@ -24,94 +34,120 @@ export interface Salesperson {
   createdAt: string;
 }
 
-const LEADS_STORAGE_KEY = "crm_leads";
-const SALESPERSONS_STORAGE_KEY = "crm_salespersons";
-
-function getStoredLeads(): Lead[] {
-  try {
-    const stored = localStorage.getItem(LEADS_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-}
-
-function getStoredSalespersons(): Salesperson[] {
-  try {
-    const stored = localStorage.getItem(SALESPERSONS_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-}
-
 export function useCRMStore() {
-  const [leads, setLeads] = useState<Lead[]>(getStoredLeads());
-  const [salespersons, setSalespersons] = useState<Salesperson[]>(
-    getStoredSalespersons()
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [salespersons, setSalespersons] = useState<Salesperson[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load data on mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const [leadsData, salespersonsData] = await Promise.all([
+          getLeads(),
+          getSalespersons(),
+        ]);
+        setLeads(leadsData);
+        setSalespersons(salespersonsData);
+      } catch (error) {
+        console.error("Error loading data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const addLead = useCallback(async (lead: Omit<Lead, "id" | "createdAt">) => {
+    try {
+      const newLead = await supabaseAddLead(lead);
+      setLeads((prevLeads) => [newLead, ...prevLeads]);
+      return newLead;
+    } catch (error) {
+      console.error("Error adding lead:", error);
+      throw error;
+    }
+  }, []);
+
+  const updateLead = useCallback(
+    async (id: string, updates: Partial<Lead>) => {
+      try {
+        await supabaseUpdateLead(id, updates);
+        setLeads((prevLeads) =>
+          prevLeads.map((lead) =>
+            lead.id === id ? { ...lead, ...updates } : lead
+          )
+        );
+      } catch (error) {
+        console.error("Error updating lead:", error);
+        throw error;
+      }
+    },
+    []
   );
 
-  const addLead = useCallback((lead: Omit<Lead, "id" | "createdAt">) => {
-    const newLead: Lead = {
-      ...lead,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-    };
-    const updated = [...leads, newLead];
-    setLeads(updated);
-    localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(updated));
-    return newLead;
-  }, [leads]);
-
-  const updateLead = useCallback((id: string, updates: Partial<Lead>) => {
-    const updated = leads.map((lead) =>
-      lead.id === id ? { ...lead, ...updates } : lead
-    );
-    setLeads(updated);
-    localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(updated));
-  }, [leads]);
-
-  const deleteLead = useCallback((id: string) => {
-    const updated = leads.filter((lead) => lead.id !== id);
-    setLeads(updated);
-    localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(updated));
-  }, [leads]);
+  const deleteLead = useCallback(async (id: string) => {
+    try {
+      await supabaseDeleteLead(id);
+      setLeads((prevLeads) => prevLeads.filter((lead) => lead.id !== id));
+    } catch (error) {
+      console.error("Error deleting lead:", error);
+      throw error;
+    }
+  }, []);
 
   const addSalesperson = useCallback(
-    (salesperson: Omit<Salesperson, "id" | "createdAt">) => {
-      const newSalesperson: Salesperson = {
-        ...salesperson,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-      };
-      const updated = [...salespersons, newSalesperson];
-      setSalespersons(updated);
-      localStorage.setItem(SALESPERSONS_STORAGE_KEY, JSON.stringify(updated));
-      return newSalesperson;
+    async (salesperson: Omit<Salesperson, "id" | "createdAt">) => {
+      try {
+        const newSalesperson = await supabaseAddSalesperson(salesperson);
+        setSalespersons((prevSalespersons) => [
+          newSalesperson,
+          ...prevSalespersons,
+        ]);
+        return newSalesperson;
+      } catch (error) {
+        console.error("Error adding salesperson:", error);
+        throw error;
+      }
     },
-    [salespersons]
+    []
   );
 
   const updateSalesperson = useCallback(
-    (id: string, updates: Partial<Salesperson>) => {
-      const updated = salespersons.map((sp) =>
-        sp.id === id ? { ...sp, ...updates } : sp
-      );
-      setSalespersons(updated);
-      localStorage.setItem(SALESPERSONS_STORAGE_KEY, JSON.stringify(updated));
+    async (id: string, updates: Partial<Salesperson>) => {
+      try {
+        await supabaseUpdateSalesperson(id, updates);
+        setSalespersons((prevSalespersons) =>
+          prevSalespersons.map((sp) =>
+            sp.id === id ? { ...sp, ...updates } : sp
+          )
+        );
+      } catch (error) {
+        console.error("Error updating salesperson:", error);
+        throw error;
+      }
     },
-    [salespersons]
+    []
   );
 
-  const deleteSalesperson = useCallback((id: string) => {
-    const updated = salespersons.filter((sp) => sp.id !== id);
-    setSalespersons(updated);
-    localStorage.setItem(SALESPERSONS_STORAGE_KEY, JSON.stringify(updated));
-  }, [salespersons]);
+  const deleteSalesperson = useCallback(async (id: string) => {
+    try {
+      await supabaseDeleteSalesperson(id);
+      setSalespersons((prevSalespersons) =>
+        prevSalespersons.filter((sp) => sp.id !== id)
+      );
+    } catch (error) {
+      console.error("Error deleting salesperson:", error);
+      throw error;
+    }
+  }, []);
 
   return {
     leads,
     salespersons,
+    isLoading,
     addLead,
     updateLead,
     deleteLead,
