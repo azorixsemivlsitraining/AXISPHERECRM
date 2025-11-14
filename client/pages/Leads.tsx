@@ -3,13 +3,16 @@ import { MainLayout } from "@/components/Layout";
 import { Lead, useCRMStore } from "@/hooks/useCRMStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, Edit2, Plus, X } from "lucide-react";
+import { Trash2, Edit2, Plus, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Leads() {
-  const { leads, addLead, deleteLead, updateLead } = useCRMStore();
+  const { leads, addLead, deleteLead, updateLead, isLoading } = useCRMStore();
+  const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<Omit<Lead, "id" | "createdAt">>({
     name: "",
     jobTitle: "",
@@ -24,37 +27,83 @@ export default function Leads() {
     companyKeywords: [""],
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim()) return;
-
-    if (editingId) {
-      updateLead(editingId, formData);
-      setEditingId(null);
-    } else {
-      addLead(formData);
+    if (!formData.name.trim()) {
+      toast({
+        title: "Error",
+        description: "Lead name is required",
+        variant: "destructive",
+      });
+      return;
     }
 
-    setFormData({
-      name: "",
-      jobTitle: "",
-      company: "",
-      email: "",
-      phoneNumbers: [""],
-      actions: [""],
-      links: [""],
-      locations: [""],
-      companyEmployees: "",
-      companyIndustries: [""],
-      companyKeywords: [""],
-    });
-    setShowForm(false);
+    setIsSubmitting(true);
+    try {
+      if (editingId) {
+        await updateLead(editingId, formData);
+        toast({
+          title: "Success",
+          description: "Lead updated successfully",
+        });
+        setEditingId(null);
+      } else {
+        await addLead(formData);
+        toast({
+          title: "Success",
+          description: "Lead added successfully",
+        });
+      }
+
+      setFormData({
+        name: "",
+        jobTitle: "",
+        company: "",
+        email: "",
+        phoneNumbers: [""],
+        actions: [""],
+        links: [""],
+        locations: [""],
+        companyEmployees: "",
+        companyIndustries: [""],
+        companyKeywords: [""],
+      });
+      setShowForm(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save lead. Please try again.",
+        variant: "destructive",
+      });
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleEditLead = (lead: Lead) => {
     setFormData(lead);
     setEditingId(lead.id);
     setShowForm(true);
+  };
+
+  const handleDeleteLead = async (id: string) => {
+    if (confirm("Are you sure you want to delete this lead?")) {
+      try {
+        await deleteLead(id);
+        toast({
+          title: "Success",
+          description: "Lead deleted successfully",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete lead. Please try again.",
+          variant: "destructive",
+        });
+        console.error(error);
+      }
+    }
   };
 
   const handleCancel = () => {
@@ -78,21 +127,33 @@ export default function Leads() {
   const updateArrayField = (
     field: keyof Pick<
       Lead,
-      "phoneNumbers" | "actions" | "links" | "locations" | "companyIndustries" | "companyKeywords"
+      | "phoneNumbers"
+      | "actions"
+      | "links"
+      | "locations"
+      | "companyIndustries"
+      | "companyKeywords"
     >,
     index: number,
     value: string
   ) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: prev[field as any].map((item, i) => (i === index ? value : item)),
+      [field]: (prev[field as any] || []).map((item: string, i: number) =>
+        i === index ? value : item
+      ),
     }));
   };
 
   const addArrayField = (
     field: keyof Pick<
       Lead,
-      "phoneNumbers" | "actions" | "links" | "locations" | "companyIndustries" | "companyKeywords"
+      | "phoneNumbers"
+      | "actions"
+      | "links"
+      | "locations"
+      | "companyIndustries"
+      | "companyKeywords"
     >
   ) => {
     setFormData((prev) => ({
@@ -104,15 +165,35 @@ export default function Leads() {
   const removeArrayField = (
     field: keyof Pick<
       Lead,
-      "phoneNumbers" | "actions" | "links" | "locations" | "companyIndustries" | "companyKeywords"
+      | "phoneNumbers"
+      | "actions"
+      | "links"
+      | "locations"
+      | "companyIndustries"
+      | "companyKeywords"
     >,
     index: number
   ) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: (prev[field as any] || []).filter((_: string, i: number) => i !== index),
+      [field]: (prev[field as any] || []).filter(
+        (_: string, i: number) => i !== index
+      ),
     }));
   };
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
+            <p className="text-slate-600">Loading leads...</p>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -454,13 +535,18 @@ export default function Leads() {
                 <Button
                   type="submit"
                   className="bg-blue-600 hover:bg-blue-700 text-white"
+                  disabled={isSubmitting}
                 >
+                  {isSubmitting && (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  )}
                   {editingId ? "Update Lead" : "Add Lead"}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleCancel}
+                  disabled={isSubmitting}
                 >
                   Cancel
                 </Button>
@@ -502,7 +588,7 @@ export default function Leads() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => deleteLead(lead.id)}
+                      onClick={() => handleDeleteLead(lead.id)}
                       className="text-red-600 hover:bg-red-50"
                     >
                       <Trash2 className="w-4 h-4" />
