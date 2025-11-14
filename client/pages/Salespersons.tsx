@@ -3,13 +3,21 @@ import { MainLayout } from "@/components/Layout";
 import { Salesperson, useCRMStore } from "@/hooks/useCRMStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, Edit2, Plus } from "lucide-react";
+import { Trash2, Edit2, Plus, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Salespersons() {
-  const { salespersons, addSalesperson, deleteSalesperson, updateSalesperson } =
-    useCRMStore();
+  const {
+    salespersons,
+    addSalesperson,
+    deleteSalesperson,
+    updateSalesperson,
+    isLoading,
+  } = useCRMStore();
+  const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<
     Omit<Salesperson, "id" | "createdAt">
   >({
@@ -18,29 +26,75 @@ export default function Salespersons() {
     phoneNumber: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim()) return;
-
-    if (editingId) {
-      updateSalesperson(editingId, formData);
-      setEditingId(null);
-    } else {
-      addSalesperson(formData);
+    if (!formData.name.trim()) {
+      toast({
+        title: "Error",
+        description: "Sales person name is required",
+        variant: "destructive",
+      });
+      return;
     }
 
-    setFormData({
-      name: "",
-      email: "",
-      phoneNumber: "",
-    });
-    setShowForm(false);
+    setIsSubmitting(true);
+    try {
+      if (editingId) {
+        await updateSalesperson(editingId, formData);
+        toast({
+          title: "Success",
+          description: "Sales person updated successfully",
+        });
+        setEditingId(null);
+      } else {
+        await addSalesperson(formData);
+        toast({
+          title: "Success",
+          description: "Sales person added successfully",
+        });
+      }
+
+      setFormData({
+        name: "",
+        email: "",
+        phoneNumber: "",
+      });
+      setShowForm(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save sales person. Please try again.",
+        variant: "destructive",
+      });
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleEditSalesperson = (salesperson: Salesperson) => {
     setFormData(salesperson);
     setEditingId(salesperson.id);
     setShowForm(true);
+  };
+
+  const handleDeleteSalesperson = async (id: string) => {
+    if (confirm("Are you sure you want to delete this sales person?")) {
+      try {
+        await deleteSalesperson(id);
+        toast({
+          title: "Success",
+          description: "Sales person deleted successfully",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete sales person. Please try again.",
+          variant: "destructive",
+        });
+        console.error(error);
+      }
+    }
   };
 
   const handleCancel = () => {
@@ -52,6 +106,19 @@ export default function Salespersons() {
       phoneNumber: "",
     });
   };
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
+            <p className="text-slate-600">Loading sales persons...</p>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -128,10 +195,19 @@ export default function Salespersons() {
                 <Button
                   type="submit"
                   className="bg-blue-600 hover:bg-blue-700 text-white"
+                  disabled={isSubmitting}
                 >
+                  {isSubmitting && (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  )}
                   {editingId ? "Update Sales Person" : "Add Sales Person"}
                 </Button>
-                <Button type="button" variant="outline" onClick={handleCancel}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  disabled={isSubmitting}
+                >
                   Cancel
                 </Button>
               </div>
@@ -174,7 +250,7 @@ export default function Salespersons() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => deleteSalesperson(salesperson.id)}
+                        onClick={() => handleDeleteSalesperson(salesperson.id)}
                         className="text-red-600 hover:bg-red-50"
                       >
                         <Trash2 className="w-4 h-4" />
