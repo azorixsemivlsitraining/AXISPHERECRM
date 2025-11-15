@@ -102,28 +102,29 @@ export default function Admin() {
         setEditingId(null);
       } else {
         // Create new salesperson with auth
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email: formData.email,
-          password,
-        });
+        try {
+          const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: formData.email,
+            password,
+          });
 
-        if (authError) {
-          throw new Error(authError.message || "Failed to create account");
-        }
+          if (authError) {
+            const errorMessage = authError.message || authError.code || "Failed to create account";
+            throw new Error(errorMessage);
+          }
 
-        if (!authData.user) {
-          throw new Error("No user returned from signup");
+          if (!authData.user) {
+            throw new Error("No user returned from signup");
+          }
+        } catch (authErr) {
+          console.error("Auth signup error:", authErr);
+          throw new Error(`Authentication error: ${authErr instanceof Error ? authErr.message : "Unknown error"}`);
         }
 
         // Add salesperson record
         const newSalesperson = await addSalesperson({
           ...formData,
           phoneNumber: formData.phoneNumber || "",
-        });
-
-        // Update the auth user metadata with salesperson id
-        await supabase.auth.updateUser({
-          data: { salesperson_id: newSalesperson.id },
         });
 
         toast({
