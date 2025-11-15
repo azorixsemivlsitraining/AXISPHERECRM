@@ -32,6 +32,15 @@ export interface SavedCompany {
   createdAt: string;
 }
 
+export interface LeadNote {
+  id: string;
+  leadId: string;
+  description: string;
+  status?: string;
+  createdAt: string;
+  createdBy?: string;
+}
+
 // LEADS OPERATIONS
 export async function getLeads(): Promise<Lead[]> {
   try {
