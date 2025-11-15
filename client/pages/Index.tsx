@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { MainLayout } from "@/components/Layout";
+import { RemindersPanel } from "@/components/RemindersPanel";
 import { useCRMStore } from "@/hooks/useCRMStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,6 @@ import {
   Calendar,
   AlertCircle,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 
 export default function Index() {
   const { leads, salespersons } = useCRMStore();
