@@ -831,21 +831,17 @@ export default function Leads() {
                           ))}
                         </select>
                       </td>
-                      <td className="px-6 py-4 text-sm">
-                        <select
-                          value={lead.assignedTo || ""}
-                          onChange={(e) =>
-                            handleAssignChange(lead.id, e.target.value)
-                          }
-                          className="px-3 py-1 rounded text-sm border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          <option value="">Unassigned</option>
-                          {salespersons.map((sp) => (
-                            <option key={sp.id} value={sp.id}>
-                              {sp.name}
-                            </option>
-                          ))}
-                        </select>
+                      <td className="px-6 py-4 text-sm text-slate-600">
+                        <p className="text-xs truncate max-w-xs">{lead.note || "-"}</p>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-600">
+                        {lead.nextReminderDate ? (
+                          <span className="font-medium text-amber-600">
+                            {new Date(lead.nextReminderDate).toLocaleDateString()}
+                          </span>
+                        ) : (
+                          "-"
+                        )}
                       </td>
                       <td className="px-6 py-4 text-sm">
                         <div className="flex gap-2">
