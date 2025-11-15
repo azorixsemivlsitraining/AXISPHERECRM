@@ -179,23 +179,20 @@ export default function Leads() {
       return;
     }
 
-    const unassignedLeads = leads.filter((l) => !l.assignedTo);
-    if (unassignedLeads.length === 0) {
+    if (leads.length === 0) {
       toast({
         title: "Info",
-        description: "All leads are already assigned",
+        description: "No leads to assign",
       });
       return;
     }
 
     try {
-      const leadsPerPerson = Math.ceil(
-        unassignedLeads.length / salespersons.length,
-      );
+      const leadsPerPerson = Math.ceil(leads.length / salespersons.length);
       let salesPersonIndex = 0;
       let leadsAssignedThisPerson = 0;
 
-      for (const lead of unassignedLeads) {
+      for (const lead of leads) {
         if (leadsAssignedThisPerson >= leadsPerPerson) {
           salesPersonIndex++;
           leadsAssignedThisPerson = 0;
@@ -216,7 +213,7 @@ export default function Leads() {
 
       toast({
         title: "Success",
-        description: `${unassignedLeads.length} leads assigned to salespersons`,
+        description: `${leads.length} leads distributed equally among ${salespersons.length} salesperson(s)`,
       });
     } catch (error) {
       toast({
@@ -381,7 +378,7 @@ export default function Leads() {
             </p>
           </div>
           <div className="flex gap-2">
-            {leads.length > 0 && canAutoAssignLeads() && (
+            {leads.length > 0 && (
               <Button
                 onClick={handleAutoAssign}
                 className="bg-green-600 hover:bg-green-700 text-white"
@@ -810,6 +807,9 @@ export default function Leads() {
                       Email
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">
+                      Assigned To
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">
                       Status
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">
@@ -846,6 +846,9 @@ export default function Leads() {
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-600">
                         {lead.email || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-600">
+                        {getSalespersonName(lead.assignedTo)}
                       </td>
                       <td className="px-6 py-4 text-sm">
                         <select
