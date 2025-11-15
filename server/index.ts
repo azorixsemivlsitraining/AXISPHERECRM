@@ -4,6 +4,7 @@ import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { handleApolloProxy } from "./routes/apollo";
 import { handleGetCompanies } from "./routes/companies";
+import { handleSyncCompanies } from "./routes/sync-companies";
 import {
   handleAuthSignIn,
   handleAuthSignUp,
@@ -48,6 +49,7 @@ export function createServer() {
 
   // Companies API
   app.get("/api/companies", handleGetCompanies);
+  app.post("/api/sync-companies", handleSyncCompanies);
 
   // Apollo proxy
   app.post("/api/apollo", handleApolloProxy);

@@ -52,6 +52,7 @@ export default function Companies() {
   const [savedCompaniesError, setSavedCompaniesError] = useState<string | null>(
     null,
   );
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // Search tab state
   const [searchQuery, setSearchQuery] = useState("");
@@ -203,14 +204,76 @@ export default function Companies() {
     }
   };
 
+  const handleSyncSavedCompanies = async () => {
+    setIsSyncing(true);
+    try {
+      // Get all companies from search results to add to saved
+      if (searchResults.length === 0) {
+        toast({
+          title: "Info",
+          description:
+            "Please search for companies first or provide company IDs to sync",
+        });
+        setIsSyncing(false);
+        return;
+      }
+
+      const response = await fetch("/api/sync-companies", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          companies: searchResults.map((c) => ({
+            id: c.id,
+            apolloId: c.id,
+            name: c.name,
+          })),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Sync failed: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      toast({
+        title: "Success",
+        description: `Synced ${data.synced} companies to your saved list`,
+      });
+
+      // Reload saved companies
+      await loadSavedCompanies();
+    } catch (error) {
+      console.error("Error syncing companies:", error);
+      toast({
+        title: "Error",
+        description: "Failed to sync companies",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div>
-          <h2 className="text-3xl font-bold text-slate-900">Companies</h2>
-          <p className="text-slate-600 mt-1">
-            Manage and search companies from Apollo.io
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold text-slate-900">Companies</h2>
+            <p className="text-slate-600 mt-1">
+              Manage and search companies from Apollo.io
+            </p>
+          </div>
+          <Button
+            onClick={handleSyncSavedCompanies}
+            disabled={isSyncing || searchResults.length === 0}
+            className="bg-purple-600 hover:bg-purple-700 text-white"
+          >
+            {isSyncing && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            {isSyncing ? "Syncing..." : "Sync Saved Companies"}
+          </Button>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
