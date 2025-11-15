@@ -12,7 +12,7 @@ import Leads from "./pages/Leads";
 import Salespersons from "./pages/Salespersons";
 import Companies from "./pages/Companies";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
