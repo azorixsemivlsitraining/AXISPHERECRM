@@ -37,8 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (session?.user) {
         // Check if it's an admin
-        const isAdmin =
-          session.user.email === "admin@axisphere.in";
+        const isAdmin = session.user.email === "admin@axisphere.in";
 
         if (isAdmin) {
           setUser({
@@ -111,7 +110,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (error) {
-        const errorMessage = error.message || error.code || "Invalid email or password";
+        const errorMessage =
+          error.message || error.code || "Invalid email or password";
         console.error("Auth sign in error:", error);
         throw new Error(errorMessage);
       }

@@ -10,15 +10,22 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 
 export default function Admin() {
-  const { salespersons, addSalesperson, updateSalesperson, deleteSalesperson, isLoading } =
-    useCRMStore();
+  const {
+    salespersons,
+    addSalesperson,
+    updateSalesperson,
+    deleteSalesperson,
+    isLoading,
+  } = useCRMStore();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<Omit<Salesperson, "id" | "createdAt">>({
+  const [formData, setFormData] = useState<
+    Omit<Salesperson, "id" | "createdAt">
+  >({
     name: "",
     email: "",
     phoneNumber: "",
@@ -103,13 +110,15 @@ export default function Admin() {
       } else {
         // Create new salesperson with auth
         try {
-          const { data: authData, error: authError } = await supabase.auth.signUp({
-            email: formData.email,
-            password,
-          });
+          const { data: authData, error: authError } =
+            await supabase.auth.signUp({
+              email: formData.email,
+              password,
+            });
 
           if (authError) {
-            const errorMessage = authError.message || authError.code || "Failed to create account";
+            const errorMessage =
+              authError.message || authError.code || "Failed to create account";
             throw new Error(errorMessage);
           }
 
@@ -118,7 +127,9 @@ export default function Admin() {
           }
         } catch (authErr) {
           console.error("Auth signup error:", authErr);
-          throw new Error(`Authentication error: ${authErr instanceof Error ? authErr.message : "Unknown error"}`);
+          throw new Error(
+            `Authentication error: ${authErr instanceof Error ? authErr.message : "Unknown error"}`,
+          );
         }
 
         // Add salesperson record
@@ -235,7 +246,9 @@ export default function Admin() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-3xl font-bold text-slate-900">Admin Panel</h2>
-            <p className="text-slate-600 mt-1">Manage salespersons and user accounts</p>
+            <p className="text-slate-600 mt-1">
+              Manage salespersons and user accounts
+            </p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -344,7 +357,9 @@ export default function Admin() {
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  {isSubmitting && (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  )}
                   {editingId ? "Update Salesperson" : "Add Salesperson"}
                 </Button>
                 <Button
@@ -363,7 +378,9 @@ export default function Admin() {
         {/* Salespersons Table */}
         {salespersons.length === 0 ? (
           <div className="bg-white rounded-lg border border-slate-200 p-12 text-center">
-            <p className="text-slate-600">No salespersons yet. Add one to get started!</p>
+            <p className="text-slate-600">
+              No salespersons yet. Add one to get started!
+            </p>
           </div>
         ) : (
           <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
@@ -395,7 +412,9 @@ export default function Admin() {
                       className={idx % 2 === 0 ? "bg-white" : "bg-slate-50"}
                     >
                       <td className="px-6 py-4 text-sm">
-                        <p className="font-medium text-slate-900">{salesperson.name}</p>
+                        <p className="font-medium text-slate-900">
+                          {salesperson.name}
+                        </p>
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-600">
                         {salesperson.email}
@@ -418,7 +437,9 @@ export default function Admin() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleDeleteSalesperson(salesperson.id)}
+                            onClick={() =>
+                              handleDeleteSalesperson(salesperson.id)
+                            }
                             className="text-red-600 hover:bg-red-50"
                           >
                             <Trash2 className="w-4 h-4" />

@@ -1,5 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Users, UserCheck, BarChart3, Building2, LogOut, Shield } from "lucide-react";
+import {
+  Users,
+  UserCheck,
+  BarChart3,
+  Building2,
+  LogOut,
+  Shield,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,9 +26,13 @@ export function MainLayout({ children }: LayoutProps) {
     { path: "/companies", label: "Companies", icon: Building2 },
   ];
 
-  const navItems = user?.role === "admin"
-    ? [{ path: "/admin", label: "Admin Panel", icon: Shield }, ...baseNavItems]
-    : baseNavItems;
+  const navItems =
+    user?.role === "admin"
+      ? [
+          { path: "/admin", label: "Admin Panel", icon: Shield },
+          ...baseNavItems,
+        ]
+      : baseNavItems;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
