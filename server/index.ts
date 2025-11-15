@@ -4,6 +4,7 @@ import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { handleApolloProxy } from "./routes/apollo";
 import { handleGetCompanies } from "./routes/companies";
+import { handleSyncCompanies } from "./routes/sync-companies";
 import {
   handleAuthSignIn,
   handleAuthSignUp,
