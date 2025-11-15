@@ -93,6 +93,12 @@ export async function addLead(lead: Omit<Lead, "id" | "createdAt">) {
     if (lead.status) {
       insertData.status = lead.status;
     }
+    if (lead.note) {
+      insertData.note = lead.note;
+    }
+    if (lead.nextReminderDate) {
+      insertData.next_reminder_date = lead.nextReminderDate;
+    }
 
     const { data, error } = await supabase
       .from("leads")
@@ -124,6 +130,8 @@ export async function addLead(lead: Omit<Lead, "id" | "createdAt">) {
       companyKeywords: data.company_keywords || [],
       assignedTo: data.assigned_to,
       status: data.status || "Not lifted",
+      note: data.note,
+      nextReminderDate: data.next_reminder_date,
       createdAt: data.created_at,
     };
   } catch (err) {
