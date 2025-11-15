@@ -5,9 +5,7 @@ const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error(
-    "[Sync] Missing Supabase credentials in environment variables",
-  );
+  console.error("[Sync] Missing Supabase credentials in environment variables");
 }
 
 const supabase = createClient(supabaseUrl || "", supabaseKey || "");

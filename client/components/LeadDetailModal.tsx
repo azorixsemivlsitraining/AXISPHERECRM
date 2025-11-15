@@ -238,29 +238,27 @@ export function LeadDetailModal({
                 </div>
               )}
 
-              {lead.companyIndustries &&
-                lead.companyIndustries.length > 0 && (
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                      Industries
-                    </label>
-                    <p className="text-slate-900">
-                      {lead.companyIndustries.filter((i) => i).join(", ")}
-                    </p>
-                  </div>
-                )}
+              {lead.companyIndustries && lead.companyIndustries.length > 0 && (
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Industries
+                  </label>
+                  <p className="text-slate-900">
+                    {lead.companyIndustries.filter((i) => i).join(", ")}
+                  </p>
+                </div>
+              )}
 
-              {lead.companyKeywords &&
-                lead.companyKeywords.length > 0 && (
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                      Keywords
-                    </label>
-                    <p className="text-slate-900">
-                      {lead.companyKeywords.filter((k) => k).join(", ")}
-                    </p>
-                  </div>
-                )}
+              {lead.companyKeywords && lead.companyKeywords.length > 0 && (
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Keywords
+                  </label>
+                  <p className="text-slate-900">
+                    {lead.companyKeywords.filter((k) => k).join(", ")}
+                  </p>
+                </div>
+              )}
 
               {lead.actions && lead.actions.length > 0 && (
                 <div className="col-span-2">

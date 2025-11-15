@@ -211,7 +211,8 @@ export default function Companies() {
       if (searchResults.length === 0) {
         toast({
           title: "Info",
-          description: "Please search for companies first or provide company IDs to sync",
+          description:
+            "Please search for companies first or provide company IDs to sync",
         });
         setIsSyncing(false);
         return;
