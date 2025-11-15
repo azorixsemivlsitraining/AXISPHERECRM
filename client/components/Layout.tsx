@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { Users, UserCheck, BarChart3, Building2 } from "lucide-react";
+import { Users, UserCheck, BarChart3, Building2, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -8,6 +10,7 @@ interface LayoutProps {
 
 export function MainLayout({ children }: LayoutProps) {
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const navItems = [
     { path: "/", label: "Dashboard", icon: BarChart3 },
