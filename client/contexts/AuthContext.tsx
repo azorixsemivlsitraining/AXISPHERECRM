@@ -112,14 +112,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (email: string, password: string, name: string) => {
     try {
+      // Step 1: Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error("Auth sign up error:", authError);
+        throw new Error(authError.message || "Failed to create account");
+      }
 
-      if (authData.user) {
+      if (!authData.user) {
+        throw new Error("No user returned from signup");
+      }
+
+      console.log("Auth user created:", authData.user.id);
+
+      // Step 2: Create salesperson record
+      try {
         const { data: userData, error: insertError } = await supabase
           .from("salespersons")
           .insert([
@@ -132,15 +143,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .select("id, name, email")
           .single();
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error("Error inserting salesperson record:", insertError);
+          throw new Error(insertError.message || "Failed to create profile");
+        }
 
         if (userData) {
+          console.log("Salesperson record created:", userData.id);
           setUser({
             id: userData.id,
             email: userData.email,
             name: userData.name,
           });
+        } else {
+          throw new Error("Failed to retrieve created profile");
         }
+      } catch (dbError) {
+        console.error("Database error during registration:", dbError);
+        throw dbError;
       }
     } catch (error) {
       console.error("Register error:", error);
