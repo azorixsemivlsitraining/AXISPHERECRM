@@ -46,6 +46,9 @@ export default function Leads() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedLeadForDetail, setSelectedLeadForDetail] = useState<Lead | null>(
+    null,
+  );
   const [formData, setFormData] = useState<Omit<Lead, "id" | "createdAt">>({
     name: "",
     jobTitle: "",
