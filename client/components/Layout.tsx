@@ -68,6 +68,28 @@ export function MainLayout({ children }: LayoutProps) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-200 bg-white mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center gap-3 mb-6">
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2F59bf3e928fc9473a97d5e87470c824bb%2F8211d605de7443fb8fd45193578c775d?format=webp&width=800"
+              alt="Axisphere Logo"
+              className="h-8 w-auto"
+            />
+            <div>
+              <p className="text-sm font-semibold text-slate-900">Axisphere Sales CRM</p>
+              <p className="text-xs text-slate-500">Manage your sales pipeline efficiently</p>
+            </div>
+          </div>
+          <div className="border-t border-slate-200 pt-6 text-center">
+            <p className="text-sm text-slate-600">
+              © 2025 Axisphere. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
