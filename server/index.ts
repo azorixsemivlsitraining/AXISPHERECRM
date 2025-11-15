@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { handleApolloProxy } from "./routes/apollo";
+import { handleGetCompanies } from "./routes/companies";
 import {
   handleAuthSignIn,
   handleAuthSignUp,
@@ -32,6 +33,21 @@ export function createServer() {
   app.post("/api/auth/sign-up", handleAuthSignUp);
   app.post("/api/auth/sign-out", handleAuthSignOut);
   app.get("/api/auth/session", handleAuthSession);
+
+  // Debug endpoint to check API key
+  app.get("/api/debug-key", (_req, res) => {
+    const apiKey = process.env.VITE_APOLLO_API_KEY;
+    res.json({
+      hasApiKey: !!apiKey,
+      keyPreview: apiKey ? apiKey.substring(0, 10) + "..." : "NOT SET",
+      allVars: Object.keys(process.env)
+        .filter((k) => k.includes("APOLLO"))
+        .sort(),
+    });
+  });
+
+  // Companies API
+  app.get("/api/companies", handleGetCompanies);
 
   // Apollo proxy
   app.post("/api/apollo", handleApolloProxy);

@@ -20,12 +20,14 @@ export const handleApolloProxy: RequestHandler = async (req, res) => {
       });
     }
 
-    console.log(`[Apollo Proxy] Calling ${method} ${APOLLO_BASE_URL}${endpoint}`);
+    console.log(
+      `[Apollo Proxy] Calling ${method} ${APOLLO_BASE_URL}${endpoint}`,
+    );
     console.log(`[Apollo Proxy] API Key set: ${APOLLO_API_KEY ? "yes" : "no"}`);
 
     const headers: HeadersInit = {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${APOLLO_API_KEY}`,
+      "X-Api-Key": APOLLO_API_KEY,
     };
 
     const options: RequestInit = {

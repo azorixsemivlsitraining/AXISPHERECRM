@@ -12,17 +12,46 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { searchCompanies, getSavedCompanies, ApolloCompany } from "@/lib/apollo";
+import { searchCompanies, ApolloCompany } from "@/lib/apollo";
 import {
   getCompanies,
   addCompany,
   deleteCompany,
   Company,
 } from "@/lib/supabase-db";
+import CompaniesTable from "@/components/CompaniesTable";
+
+interface ApiCompany {
+  id: string;
+  name: string;
+  domain?: string;
+  industry?: string;
+  employeeCount?: number;
+  employeeCountRange?: string;
+  revenue?: number;
+  revenueRange?: string;
+  logoUrl?: string;
+  linkedinUrl?: string;
+  crunchbaseUrl?: string;
+  foundedYear?: number;
+  hqAddress?: string;
+  countries?: string[];
+  website?: string;
+  phone?: string;
+  apolloProfileUrl?: string;
+  [key: string]: any;
+}
 
 export default function Companies() {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("search");
+  const [activeTab, setActiveTab] = useState("saved");
+
+  // Saved Companies tab state
+  const [savedCompanies, setSavedCompanies] = useState<ApiCompany[]>([]);
+  const [isLoadingSavedCompanies, setIsLoadingSavedCompanies] = useState(true);
+  const [savedCompaniesError, setSavedCompaniesError] = useState<string | null>(
+    null,
+  );
 
   // Search tab state
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,51 +61,44 @@ export default function Companies() {
   const [isSearching, setIsSearching] = useState(false);
   const [importedIds, setImportedIds] = useState<Set<string>>(new Set());
 
-  // My Companies tab state
-  const [myCompanies, setMyCompanies] = useState<Company[]>([]);
-  const [isLoadingMyCompanies, setIsLoadingMyCompanies] = useState(true);
-
-  // Load my companies on mount
+  // Load saved companies on mount
   useEffect(() => {
-    loadMyCompanies();
+    loadSavedCompanies();
   }, []);
 
-  const loadMyCompanies = async () => {
+  const loadSavedCompanies = async () => {
     try {
-      setIsLoadingMyCompanies(true);
-      const apolloCompanies = await getSavedCompanies();
+      setIsLoadingSavedCompanies(true);
+      setSavedCompaniesError(null);
+      const response = await fetch("/api/companies");
 
-      const mappedCompanies: Company[] = apolloCompanies.map((apolloCompany, index) => ({
-        id: apolloCompany.id || `apollo-${index}`,
-        apolloId: apolloCompany.id,
-        name: apolloCompany.name,
-        domain: apolloCompany.domain,
-        industry: apolloCompany.industry,
-        employeeCount: apolloCompany.employee_count,
-        employeeCountRange: apolloCompany.employee_count_range,
-        revenue: apolloCompany.revenue,
-        revenueRange: apolloCompany.revenue_range,
-        logoUrl: apolloCompany.logo_url,
-        linkedinUrl: apolloCompany.linkedin_url,
-        crunchbaseUrl: apolloCompany.crunchbase_url,
-        foundedYear: apolloCompany.founded_year,
-        hqAddress: apolloCompany.hq_address,
-        countries: apolloCompany.countries,
-        website: apolloCompany.website,
-        phone: apolloCompany.phone,
-        createdAt: new Date().toISOString(),
-      }));
+      if (!response.ok) {
+        throw new Error(`Failed to fetch companies: ${response.statusText}`);
+      }
 
-      setMyCompanies(mappedCompanies);
+      const data = await response.json();
+      setSavedCompanies(data.companies || []);
+
+      if ((data.companies || []).length === 0) {
+        toast({
+          title: "Info",
+          description: "No saved companies found in Apollo.io",
+        });
+      }
     } catch (error) {
-      console.error("Error loading saved companies from Apollo:", error);
+      console.error("Error loading saved companies:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to load saved companies";
+      setSavedCompaniesError(errorMessage);
       toast({
         title: "Error",
-        description: "Failed to load your saved companies from Apollo.io",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
-      setIsLoadingMyCompanies(false);
+      setIsLoadingSavedCompanies(false);
     }
   };
 
@@ -130,29 +152,6 @@ export default function Companies() {
     try {
       await addCompany(company);
       setImportedIds((prev) => new Set(prev).add(company.id));
-      setMyCompanies((prev) => [
-        {
-          id: Date.now().toString(),
-          apolloId: company.id,
-          name: company.name,
-          domain: company.domain,
-          industry: company.industry,
-          employeeCount: company.employee_count,
-          employeeCountRange: company.employee_count_range,
-          revenue: company.revenue,
-          revenueRange: company.revenue_range,
-          logoUrl: company.logo_url,
-          linkedinUrl: company.linkedin_url,
-          crunchbaseUrl: company.crunchbase_url,
-          foundedYear: company.founded_year,
-          hqAddress: company.hq_address,
-          countries: company.countries,
-          website: company.website,
-          phone: company.phone,
-          createdAt: new Date().toISOString(),
-        },
-        ...prev,
-      ]);
       toast({
         title: "Success",
         description: `${company.name} imported successfully`,
@@ -168,22 +167,39 @@ export default function Companies() {
   };
 
   const handleDeleteCompany = async (id: string) => {
-    if (confirm("Are you sure you want to delete this company?")) {
-      try {
-        await deleteCompany(id);
-        setMyCompanies((prev) => prev.filter((c) => c.id !== id));
-        toast({
-          title: "Success",
-          description: "Company deleted successfully",
-        });
-      } catch (error) {
-        console.error("Error deleting company:", error);
-        toast({
-          title: "Error",
-          description: "Failed to delete company",
-          variant: "destructive",
-        });
-      }
+    try {
+      await deleteCompany(id);
+      setSavedCompanies((prev) => prev.filter((c) => c.id !== id));
+      toast({
+        title: "Success",
+        description: "Company deleted successfully",
+      });
+    } catch (error) {
+      console.error("Error deleting company:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete company",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateCompany = async (id: string, data: Partial<ApiCompany>) => {
+    try {
+      setSavedCompanies((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, ...data } : c)),
+      );
+      toast({
+        title: "Success",
+        description: "Company updated successfully",
+      });
+    } catch (error) {
+      console.error("Error updating company:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update company",
+        variant: "destructive",
+      });
     }
   };
 
@@ -193,25 +209,54 @@ export default function Companies() {
         <div>
           <h2 className="text-3xl font-bold text-slate-900">Companies</h2>
           <p className="text-slate-600 mt-1">
-            Search and manage companies from Apollo.io
+            Manage and search companies from Apollo.io
           </p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1">
             <TabsTrigger
+              value="saved"
+              className="data-[state=active]:bg-white data-[state=active]:text-slate-900"
+            >
+              Saved Companies ({savedCompanies.length})
+            </TabsTrigger>
+            <TabsTrigger
               value="search"
               className="data-[state=active]:bg-white data-[state=active]:text-slate-900"
             >
               Search Companies
             </TabsTrigger>
-            <TabsTrigger
-              value="my-companies"
-              className="data-[state=active]:bg-white data-[state=active]:text-slate-900"
-            >
-              My Companies ({myCompanies.length})
-            </TabsTrigger>
           </TabsList>
+
+          {/* Saved Companies Tab */}
+          <TabsContent value="saved" className="mt-6">
+            {savedCompaniesError && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium text-red-900">
+                    Error loading companies
+                  </p>
+                  <p className="text-sm text-red-800">{savedCompaniesError}</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={loadSavedCompanies}
+                    className="mt-2"
+                  >
+                    Retry
+                  </Button>
+                </div>
+              </div>
+            )}
+            <CompaniesTable
+              companies={savedCompanies}
+              isLoading={isLoadingSavedCompanies}
+              onDeleteCompany={handleDeleteCompany}
+              onUpdateCompany={handleUpdateCompany}
+            />
+          </TabsContent>
 
           {/* Search Tab */}
           <TabsContent value="search" className="space-y-6 mt-6">
@@ -398,128 +443,6 @@ export default function Companies() {
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-          </TabsContent>
-
-          {/* My Companies Tab */}
-          <TabsContent value="my-companies" className="mt-6">
-            {isLoadingMyCompanies ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="text-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-                  <p className="text-slate-600">Loading companies...</p>
-                </div>
-              </div>
-            ) : myCompanies.length === 0 ? (
-              <div className="bg-white rounded-lg border border-slate-200 p-12 text-center">
-                <AlertCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                <p className="text-slate-600">
-                  No companies imported yet. Search and import companies from
-                  Apollo.io!
-                </p>
-              </div>
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {myCompanies.map((company) => (
-                  <div
-                    key={company.id}
-                    className="bg-white rounded-lg border border-slate-200 p-5 hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex items-start gap-3 mb-3">
-                      {company.logoUrl && (
-                        <img
-                          src={company.logoUrl}
-                          alt={company.name}
-                          className="w-12 h-12 rounded object-contain"
-                        />
-                      )}
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-slate-900">
-                          {company.name}
-                        </h4>
-                        {company.industry && (
-                          <p className="text-xs text-slate-500">
-                            {company.industry}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="space-y-2 text-sm mb-4">
-                      {company.domain && (
-                        <p className="text-slate-600">
-                          <span className="font-medium">Domain:</span>{" "}
-                          <a
-                            href={`https://${company.domain}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
-                            {company.domain}
-                          </a>
-                        </p>
-                      )}
-                      {company.employeeCountRange && (
-                        <p className="text-slate-600">
-                          <span className="font-medium">Employees:</span>{" "}
-                          {company.employeeCountRange}
-                        </p>
-                      )}
-                      {company.revenueRange && (
-                        <p className="text-slate-600">
-                          <span className="font-medium">Revenue:</span>{" "}
-                          {company.revenueRange}
-                        </p>
-                      )}
-                      {company.foundedYear && (
-                        <p className="text-slate-600">
-                          <span className="font-medium">Founded:</span>{" "}
-                          {company.foundedYear}
-                        </p>
-                      )}
-                      {company.hqAddress && (
-                        <p className="text-slate-600">
-                          <span className="font-medium">Location:</span>{" "}
-                          {company.hqAddress}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="flex gap-2 mb-3">
-                      {company.linkedinUrl && (
-                        <a
-                          href={company.linkedinUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-700"
-                          title="LinkedIn"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      )}
-                      {company.crunchbaseUrl && (
-                        <a
-                          href={company.crunchbaseUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-700"
-                          title="Crunchbase"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      )}
-                    </div>
-
-                    <Button
-                      onClick={() => handleDeleteCompany(company.id)}
-                      className="w-full bg-red-100 text-red-600 hover:bg-red-200"
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete
-                    </Button>
-                  </div>
-                ))}
               </div>
             )}
           </TabsContent>
