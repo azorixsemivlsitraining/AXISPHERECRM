@@ -10,6 +10,16 @@ import {
   deleteSalesperson as supabaseDeleteSalesperson,
 } from "@/lib/supabase-db";
 
+export type LeadStatus =
+  | "Not lifted"
+  | "Not connected"
+  | "Voice Message"
+  | "Quotation sent"
+  | "Site visit"
+  | "Advance payment"
+  | "Lead finished"
+  | "Contacted";
+
 export interface Lead {
   id: string;
   name: string;
@@ -23,6 +33,8 @@ export interface Lead {
   companyEmployees: string;
   companyIndustries: string[];
   companyKeywords: string[];
+  assignedTo?: string;
+  status?: LeadStatus;
   createdAt: string;
 }
 
