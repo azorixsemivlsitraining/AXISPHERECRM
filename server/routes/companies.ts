@@ -28,7 +28,7 @@ export const handleGetCompanies: RequestHandler = async (req, res) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${APOLLO_API_KEY}`,
+        "X-Api-Key": APOLLO_API_KEY,
       },
       body: JSON.stringify({
         limit,
