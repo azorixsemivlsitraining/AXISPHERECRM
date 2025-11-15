@@ -381,7 +381,7 @@ export default function Leads() {
             </p>
           </div>
           <div className="flex gap-2">
-            {leads.length > 0 && canAutoAssignLeads() && (
+            {leads.length > 0 && (
               <Button
                 onClick={handleAutoAssign}
                 className="bg-green-600 hover:bg-green-700 text-white"
@@ -808,6 +808,9 @@ export default function Leads() {
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">
                       Email
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">
+                      Assigned To
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">
                       Status
