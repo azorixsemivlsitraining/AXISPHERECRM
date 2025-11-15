@@ -89,12 +89,10 @@ const App = () => (
   </QueryClientProvider>
 );
 
-// Ensure root element exists and only render once
+// Create root and render app
 const rootElement = document.getElementById("root");
-if (rootElement && !rootElement.hasChildNodes()) {
-  createRoot(rootElement).render(<App />);
-} else if (rootElement) {
-  // If root already has content, use render instead
-  const root = createRoot(rootElement);
-  root.render(<App />);
+if (!rootElement) {
+  throw new Error("Root element not found");
 }
+
+createRoot(rootElement).render(<App />);
