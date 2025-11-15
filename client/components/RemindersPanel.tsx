@@ -1,7 +1,13 @@
 import { useCRMStore } from "@/hooks/useCRMStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Calendar, AlertCircle, Clock, CheckCircle2, Link as LinkIcon } from "lucide-react";
+import {
+  Calendar,
+  AlertCircle,
+  Clock,
+  CheckCircle2,
+  Link as LinkIcon,
+} from "lucide-react";
 
 export function RemindersPanel() {
   const { leads } = useCRMStore();
@@ -39,7 +45,8 @@ export function RemindersPanel() {
   const overdueCount = overdue.length;
   const todayReminders = getRemindersForNextDays(1).filter(
     (r) =>
-      new Date(r.nextReminderDate!).toDateString() === new Date().toDateString(),
+      new Date(r.nextReminderDate!).toDateString() ===
+      new Date().toDateString(),
   );
 
   const getStatusColor = (status?: string) => {
@@ -74,7 +81,8 @@ export function RemindersPanel() {
             <div>
               <h4 className="font-semibold text-red-900">Overdue Reminders</h4>
               <p className="text-sm text-red-700 mt-1">
-                You have {overdueCount} lead{overdueCount !== 1 ? "s" : ""} with overdue reminders
+                You have {overdueCount} lead{overdueCount !== 1 ? "s" : ""} with
+                overdue reminders
               </p>
             </div>
           </div>
@@ -93,7 +101,9 @@ export function RemindersPanel() {
               <div key={reminder.id} className="bg-white rounded-lg p-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
-                    <p className="font-medium text-slate-900">{reminder.name}</p>
+                    <p className="font-medium text-slate-900">
+                      {reminder.name}
+                    </p>
                     <p className="text-sm text-slate-600">
                       {reminder.jobTitle && `${reminder.jobTitle} • `}
                       {reminder.company || "No company"}
@@ -104,7 +114,9 @@ export function RemindersPanel() {
                       </p>
                     )}
                   </div>
-                  <span className={`text-xs font-medium px-2 py-1 rounded ${getStatusColor(reminder.status)}`}>
+                  <span
+                    className={`text-xs font-medium px-2 py-1 rounded ${getStatusColor(reminder.status)}`}
+                  >
                     {reminder.status || "Not lifted"}
                   </span>
                 </div>
@@ -139,14 +151,19 @@ export function RemindersPanel() {
             {upcoming.slice(0, 10).map((reminder) => {
               const daysUntil = getDaysUntil(reminder.nextReminderDate!);
               return (
-                <div key={reminder.id} className="bg-white rounded-lg border border-slate-200 p-4 hover:shadow-md transition-shadow">
+                <div
+                  key={reminder.id}
+                  className="bg-white rounded-lg border border-slate-200 p-4 hover:shadow-md transition-shadow"
+                >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-start gap-2 mb-2">
                         <p className="font-medium text-slate-900 flex-1">
                           {reminder.name}
                         </p>
-                        <span className={`text-xs font-medium px-2 py-1 rounded whitespace-nowrap ${getStatusColor(reminder.status)}`}>
+                        <span
+                          className={`text-xs font-medium px-2 py-1 rounded whitespace-nowrap ${getStatusColor(reminder.status)}`}
+                        >
                           {reminder.status || "Not lifted"}
                         </span>
                       </div>
@@ -171,17 +188,28 @@ export function RemindersPanel() {
                     </div>
                     <div className="text-right flex-shrink-0">
                       <p className="text-sm font-semibold text-slate-900">
-                        {new Date(reminder.nextReminderDate!).toLocaleDateString()}
+                        {new Date(
+                          reminder.nextReminderDate!,
+                        ).toLocaleDateString()}
                       </p>
-                      <p className={`text-xs font-medium mt-1 ${
-                        daysUntil === 0 ? "text-red-600" :
-                        daysUntil === 1 ? "text-amber-600" :
-                        daysUntil <= 3 ? "text-orange-600" :
-                        daysUntil <= 7 ? "text-blue-600" : "text-slate-600"
-                      }`}>
-                        {daysUntil === 0 ? "Today" :
-                         daysUntil === 1 ? "Tomorrow" :
-                         `In ${daysUntil} days`}
+                      <p
+                        className={`text-xs font-medium mt-1 ${
+                          daysUntil === 0
+                            ? "text-red-600"
+                            : daysUntil === 1
+                              ? "text-amber-600"
+                              : daysUntil <= 3
+                                ? "text-orange-600"
+                                : daysUntil <= 7
+                                  ? "text-blue-600"
+                                  : "text-slate-600"
+                        }`}
+                      >
+                        {daysUntil === 0
+                          ? "Today"
+                          : daysUntil === 1
+                            ? "Tomorrow"
+                            : `In ${daysUntil} days`}
                       </p>
                     </div>
                   </div>
@@ -194,12 +222,12 @@ export function RemindersPanel() {
 
       {/* Weekly Summary */}
       <div className="bg-white rounded-lg border border-slate-200 p-4">
-        <h4 className="font-semibold text-slate-900 mb-3">Next 7 Days Summary</h4>
+        <h4 className="font-semibold text-slate-900 mb-3">
+          Next 7 Days Summary
+        </h4>
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-amber-600">
-              {overdueCount}
-            </p>
+            <p className="text-2xl font-bold text-amber-600">{overdueCount}</p>
             <p className="text-xs text-slate-600">Overdue</p>
           </div>
           <div className="text-center">
