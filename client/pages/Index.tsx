@@ -1,13 +1,27 @@
 import { Link } from "react-router-dom";
 import { MainLayout } from "@/components/Layout";
 import { useCRMStore } from "@/hooks/useCRMStore";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Users, UserCheck, TrendingUp, Calendar } from "lucide-react";
+import { Users, UserCheck, TrendingUp, Calendar, AlertCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Index() {
   const { leads, salespersons } = useCRMStore();
+  const { user } = useAuth();
 
-  const recentLeads = [...leads]
+  const assignedLeads = leads.filter((lead) => lead.assignedTo === user?.id);
+
+  const upcomingReminders = assignedLeads
+    .filter((lead) => lead.nextReminderDate)
+    .sort(
+      (a, b) =>
+        new Date(a.nextReminderDate!).getTime() -
+        new Date(b.nextReminderDate!).getTime(),
+    )
+    .slice(0, 5);
+
+  const recentLeads = [...assignedLeads]
     .sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
