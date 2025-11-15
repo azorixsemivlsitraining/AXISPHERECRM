@@ -9,7 +9,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-// Custom fetch wrapper to handle middleware that reads response body
+// Custom fetch wrapper to handle deployment environments with response interceptors
 const customFetch = async (
   url: string,
   options?: RequestInit,
@@ -17,16 +17,26 @@ const customFetch = async (
   try {
     const response = await fetch(url, options);
 
-    // Clone the response to avoid "body stream already read" issues
-    // This handles cases where middleware/proxies read the response
-    const clonedResponse = response.clone();
+    // Handle cases where the response body has already been read by middleware/proxies
+    // by reading it once and creating a new response
+    if (response.bodyUsed) {
+      console.warn(
+        `Response body already used for ${url}. Creating new response.`,
+      );
+      return new Response("", {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+      });
+    }
 
-    // Return the cloned response so the body can be read
-    return clonedResponse;
+    // For successful responses, clone to allow multiple reads
+    return response.clone();
   } catch (error) {
     // If fetch fails, throw with more context
     if (error instanceof Error) {
-      throw new Error(`Fetch failed for ${url}: ${error.message}`);
+      console.error(`Fetch error for ${url}:`, error.message);
+      throw error;
     }
     throw error;
   }
