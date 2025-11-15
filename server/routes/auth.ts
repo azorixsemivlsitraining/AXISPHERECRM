@@ -9,8 +9,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // Create server-side Supabase client
-const serverSupabase = supabaseUrl && supabaseAnonKey ? 
-  createClient(supabaseUrl, supabaseAnonKey) : null;
+const serverSupabase =
+  supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
 
 export const handleAuthSignIn: RequestHandler = async (req, res) => {
   try {

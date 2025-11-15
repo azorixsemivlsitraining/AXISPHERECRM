@@ -15,6 +15,7 @@ The error occurs when Supabase client tries to parse a response body that has al
 The application now includes server-side auth routes that handle authentication, bypassing the client-side response body issue:
 
 **Endpoints:**
+
 - `POST /api/auth/sign-in` - Login
 - `POST /api/auth/sign-up` - Registration
 - `POST /api/auth/sign-out` - Logout
@@ -30,11 +31,11 @@ const login = async (email: string, password: string) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
-    
+
     if (!response.ok) {
       throw new Error("Login failed");
     }
-    
+
     const { user, session } = await response.json();
     setUser(user);
     // Store session if needed
@@ -82,11 +83,13 @@ If deploying to Fly.io, remove or update `netlify.toml`:
 ## Testing Locally
 
 1. Build the app:
+
    ```bash
    npm run build
    ```
 
 2. Start production server:
+
    ```bash
    npm run start
    ```
@@ -99,11 +102,13 @@ If deploying to Fly.io, remove or update `netlify.toml`:
 ## Deploying to Fly.io
 
 1. Install Fly.io CLI:
+
    ```bash
    curl -L https://fly.io/install.sh | sh
    ```
 
 2. Set environment variables:
+
    ```bash
    fly secrets set VITE_SUPABASE_URL="your-url"
    fly secrets set VITE_SUPABASE_ANON_KEY="your-key"
@@ -117,6 +122,7 @@ If deploying to Fly.io, remove or update `netlify.toml`:
 ## Monitoring
 
 Check logs on Fly.io:
+
 ```bash
 fly logs -a your-app-name
 ```
@@ -124,6 +130,7 @@ fly logs -a your-app-name
 ## Alternative: Use a Different Deployment Platform
 
 If Fly.io issues persist, consider:
+
 - **Netlify**: Use the existing Netlify configuration
 - **Vercel**: Update for Vercel deployment
 - **AWS Amplify**: Native AWS integration

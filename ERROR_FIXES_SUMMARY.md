@@ -5,6 +5,7 @@
 ### 1. ✅ React Root Warning - "createRoot() already called"
 
 **Problem:**
+
 ```
 Warning: You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before.
 ```
@@ -18,6 +19,7 @@ Warning: You are calling ReactDOMClient.createRoot() on a container that has alr
 ### 2. ✅ React DOM Error - "Failed to execute 'removeChild'"
 
 **Problem:**
+
 ```
 NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
 ```
@@ -31,6 +33,7 @@ NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed
 ### 3. ⚠️ Supabase Response Body Error - "body stream already read"
 
 **Problem:**
+
 ```
 AuthUnknownError: Failed to execute 'json' on 'Response': body stream already read
 ```
@@ -40,18 +43,21 @@ AuthUnknownError: Failed to execute 'json' on 'Response': body stream already re
 **Fixes Applied:**
 
 #### A. Simplified Supabase Client Configuration
+
 - Removed custom fetch wrapper that was causing issues
 - Applied standard Supabase client configuration in `client/lib/supabase.ts`
 
 #### B. Added Server-Side Auth Proxy
+
 - Created `server/routes/auth.ts` with server-side authentication endpoints
 - Endpoints bypass client-side response issues:
   - `POST /api/auth/sign-in`
-  - `POST /api/auth/sign-up` 
+  - `POST /api/auth/sign-up`
   - `POST /api/auth/sign-out`
   - `GET /api/auth/session`
 
 #### C. Updated Server Configuration
+
 - Registered auth routes in `server/index.ts`
 
 ---
@@ -59,6 +65,7 @@ AuthUnknownError: Failed to execute 'json' on 'Response': body stream already re
 ## What You Need to Do
 
 ### For Local Development
+
 No action needed - the app works on localhost with current fixes.
 
 ### For Fly.io Deployment
@@ -74,7 +81,7 @@ const login = async (email: string, password: string) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  
+
   if (!response.ok) throw new Error("Login failed");
   const { user } = await response.json();
   setUser(user);
@@ -84,6 +91,7 @@ const login = async (email: string, password: string) => {
 **Option 2: Switch to Netlify Deployment**
 
 The Netlify configuration is already set up. Deploy using:
+
 ```bash
 npm install -g netlify-cli
 netlify deploy
@@ -113,10 +121,12 @@ Vercel handles Supabase requests better than Fly.io. Update deployment configura
 ## Next Steps
 
 1. **Test Locally:**
+
    ```bash
    npm run build
    npm run start
    ```
+
    Then test at http://localhost:8080
 
 2. **For Fly.io:**
