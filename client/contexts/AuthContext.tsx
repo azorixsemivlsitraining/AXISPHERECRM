@@ -33,18 +33,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } = await supabase.auth.getSession();
 
       if (session?.user) {
-        const { data } = await supabase
-          .from("salespersons")
-          .select("id, name, email")
-          .eq("auth_id", session.user.id)
-          .single();
+        try {
+          const { data, error } = await supabase
+            .from("salespersons")
+            .select("id, name, email")
+            .eq("auth_id", session.user.id)
+            .single();
 
-        if (data) {
-          setUser({
-            id: data.id,
-            email: data.email,
-            name: data.name,
-          });
+          if (error) {
+            console.error("Error fetching salesperson record:", error);
+            return;
+          }
+
+          if (data) {
+            setUser({
+              id: data.id,
+              email: data.email,
+              name: data.name,
+            });
+          }
+        } catch (dbError) {
+          console.error("Database error during auth check:", dbError);
         }
       }
     } catch (error) {
@@ -61,20 +70,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Auth sign in error:", error);
+        throw error;
+      }
 
-      const { data: userData } = await supabase
-        .from("salespersons")
-        .select("id, name, email")
-        .eq("auth_id", data.user.id)
-        .single();
+      if (!data.user) {
+        throw new Error("No user returned from login");
+      }
 
-      if (userData) {
-        setUser({
-          id: userData.id,
-          email: userData.email,
-          name: userData.name,
-        });
+      try {
+        const { data: userData, error: dbError } = await supabase
+          .from("salespersons")
+          .select("id, name, email")
+          .eq("auth_id", data.user.id)
+          .single();
+
+        if (dbError) {
+          console.error(
+            "Error fetching salesperson record after login:",
+            dbError,
+          );
+          throw new Error("Could not fetch user profile: " + dbError.message);
+        }
+
+        if (userData) {
+          setUser({
+            id: userData.id,
+            email: userData.email,
+            name: userData.name,
+          });
+        } else {
+          throw new Error("No user profile found. Please contact support.");
+        }
+      } catch (dbError) {
+        console.error("Database error during login:", dbError);
+        throw dbError;
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -84,14 +115,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (email: string, password: string, name: string) => {
     try {
+      // Step 1: Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error("Auth sign up error:", authError);
+        throw new Error(authError.message || "Failed to create account");
+      }
 
-      if (authData.user) {
+      if (!authData.user) {
+        throw new Error("No user returned from signup");
+      }
+
+      console.log("Auth user created:", authData.user.id);
+
+      // Step 2: Create salesperson record
+      try {
         const { data: userData, error: insertError } = await supabase
           .from("salespersons")
           .insert([
@@ -104,15 +146,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .select("id, name, email")
           .single();
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error("Error inserting salesperson record:", insertError);
+          throw new Error(insertError.message || "Failed to create profile");
+        }
 
         if (userData) {
+          console.log("Salesperson record created:", userData.id);
           setUser({
             id: userData.id,
             email: userData.email,
             name: userData.name,
           });
+        } else {
+          throw new Error("Failed to retrieve created profile");
         }
+      } catch (dbError) {
+        console.error("Database error during registration:", dbError);
+        throw dbError;
       }
     } catch (error) {
       console.error("Register error:", error);
