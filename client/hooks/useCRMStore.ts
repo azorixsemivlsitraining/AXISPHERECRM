@@ -35,6 +35,8 @@ export interface Lead {
   companyKeywords: string[];
   assignedTo?: string;
   status?: LeadStatus;
+  note?: string;
+  nextReminderDate?: string;
   createdAt: string;
 }
 
