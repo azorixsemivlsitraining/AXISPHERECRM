@@ -40,7 +40,9 @@ export function createServer() {
     res.json({
       hasApiKey: !!apiKey,
       keyPreview: apiKey ? apiKey.substring(0, 10) + "..." : "NOT SET",
-      allVars: Object.keys(process.env).filter(k => k.includes("APOLLO")).sort(),
+      allVars: Object.keys(process.env)
+        .filter((k) => k.includes("APOLLO"))
+        .sort(),
     });
   });
 

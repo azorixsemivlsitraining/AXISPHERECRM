@@ -5,9 +5,11 @@ const APOLLO_BASE_URL = "https://api.apollo.io/v1";
 export const handleGetCompanies: RequestHandler = async (req, res) => {
   try {
     const APOLLO_API_KEY = process.env.VITE_APOLLO_API_KEY;
-    
+
     if (!APOLLO_API_KEY) {
-      console.error("[Companies] Missing VITE_APOLLO_API_KEY environment variable");
+      console.error(
+        "[Companies] Missing VITE_APOLLO_API_KEY environment variable",
+      );
       return res.status(500).json({
         error: "Apollo API key not configured",
       });
@@ -16,10 +18,15 @@ export const handleGetCompanies: RequestHandler = async (req, res) => {
     console.log("[Companies] API key is set");
 
     // Get pagination parameters from query string
-    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 100, 1), 500);
+    const limit = Math.min(
+      Math.max(parseInt(req.query.limit as string) || 100, 1),
+      500,
+    );
     const page = Math.max(parseInt(req.query.page as string) || 1, 1);
 
-    console.log(`[Companies] Fetching saved companies with limit=${limit}, page=${page}`);
+    console.log(
+      `[Companies] Fetching saved companies with limit=${limit}, page=${page}`,
+    );
 
     const headers: HeadersInit = {
       "Content-Type": "application/json",
@@ -29,7 +36,9 @@ export const handleGetCompanies: RequestHandler = async (req, res) => {
     // Try to fetch from mixed_companies/search endpoint with higher limit to get all saved companies
     const searchUrl = `${APOLLO_BASE_URL}/mixed_companies/search`;
 
-    console.log(`[Companies] Calling ${searchUrl} with limit=${limit}, page=${page}`);
+    console.log(
+      `[Companies] Calling ${searchUrl} with limit=${limit}, page=${page}`,
+    );
 
     // Try fetching with a large limit to get all saved companies at once
     const effectiveLimit = Math.min(500, limit);
@@ -54,8 +63,10 @@ export const handleGetCompanies: RequestHandler = async (req, res) => {
 
     if (!searchResponse.ok) {
       console.error(`[Companies] Search API error: ${searchResponse.status}`);
-      console.error(`[Companies] Error response: ${responseText.substring(0, 300)}`);
-      
+      console.error(
+        `[Companies] Error response: ${responseText.substring(0, 300)}`,
+      );
+
       return res.status(searchResponse.status).json({
         error: "Failed to fetch companies from Apollo",
         status: searchResponse.status,
@@ -66,7 +77,10 @@ export const handleGetCompanies: RequestHandler = async (req, res) => {
     try {
       searchData = JSON.parse(responseText);
     } catch (e) {
-      console.error("[Companies] Failed to parse response:", responseText.substring(0, 300));
+      console.error(
+        "[Companies] Failed to parse response:",
+        responseText.substring(0, 300),
+      );
       return res.status(500).json({
         error: "Invalid response from Apollo API",
       });
@@ -103,7 +117,9 @@ export const handleGetCompanies: RequestHandler = async (req, res) => {
       total: searchData.pagination?.total_entries || companies.length,
       page,
       limit,
-      hasMore: searchData.pagination?.total_pages ? page < searchData.pagination.total_pages : false,
+      hasMore: searchData.pagination?.total_pages
+        ? page < searchData.pagination.total_pages
+        : false,
     });
   } catch (error) {
     console.error("[Companies] Unexpected error:", error);

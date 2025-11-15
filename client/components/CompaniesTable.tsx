@@ -173,14 +173,18 @@ export default function CompaniesTable({
                   <TableCell>
                     <Input
                       value={editData.website || ""}
-                      onChange={(e) => handleEditChange("website", e.target.value)}
+                      onChange={(e) =>
+                        handleEditChange("website", e.target.value)
+                      }
                       className="h-8"
                     />
                   </TableCell>
                   <TableCell>
                     <Input
                       value={editData.industry || ""}
-                      onChange={(e) => handleEditChange("industry", e.target.value)}
+                      onChange={(e) =>
+                        handleEditChange("industry", e.target.value)
+                      }
                       className="h-8"
                     />
                   </TableCell>
@@ -240,7 +244,11 @@ export default function CompaniesTable({
                   <TableCell>
                     {company.website ? (
                       <a
-                        href={company.website.startsWith("http") ? company.website : `https://${company.website}`}
+                        href={
+                          company.website.startsWith("http")
+                            ? company.website
+                            : `https://${company.website}`
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline text-sm truncate block"

@@ -50,7 +50,7 @@ export default function Companies() {
   const [savedCompanies, setSavedCompanies] = useState<ApiCompany[]>([]);
   const [isLoadingSavedCompanies, setIsLoadingSavedCompanies] = useState(true);
   const [savedCompaniesError, setSavedCompaniesError] = useState<string | null>(
-    null
+    null,
   );
 
   // Search tab state
@@ -184,13 +184,10 @@ export default function Companies() {
     }
   };
 
-  const handleUpdateCompany = async (
-    id: string,
-    data: Partial<ApiCompany>
-  ) => {
+  const handleUpdateCompany = async (id: string, data: Partial<ApiCompany>) => {
     try {
       setSavedCompanies((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, ...data } : c))
+        prev.map((c) => (c.id === id ? { ...c, ...data } : c)),
       );
       toast({
         title: "Success",
@@ -238,7 +235,9 @@ export default function Companies() {
               <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-red-900">Error loading companies</p>
+                  <p className="font-medium text-red-900">
+                    Error loading companies
+                  </p>
                   <p className="text-sm text-red-800">{savedCompaniesError}</p>
                   <Button
                     variant="outline"
