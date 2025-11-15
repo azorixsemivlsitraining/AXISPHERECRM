@@ -1,10 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 
+export type UserRole = "salesperson" | "admin";
+
 export interface AuthUser {
   id: string;
   email: string;
   name: string;
+  role: UserRole;
 }
 
 interface AuthContextType {
