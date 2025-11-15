@@ -252,6 +252,9 @@ export default function Leads() {
       companyIndustries: [""],
       companyKeywords: [""],
       status: "Not lifted",
+      note: "",
+      nextReminderDate: "",
+      assignedTo: user?.id,
     });
   };
 
