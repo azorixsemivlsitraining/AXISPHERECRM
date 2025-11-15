@@ -223,7 +223,7 @@ export async function getSalespersons(): Promise<Salesperson[]> {
 }
 
 export async function addSalesperson(
-  salesperson: Omit<Salesperson, "id" | "createdAt">,
+  salesperson: Omit<Salesperson, "id" | "createdAt"> & { authId?: string },
 ) {
   try {
     const { data, error } = await supabase
@@ -233,6 +233,7 @@ export async function addSalesperson(
           name: salesperson.name,
           email: salesperson.email,
           phone_number: salesperson.phoneNumber,
+          auth_id: salesperson.authId,
         },
       ])
       .select()
