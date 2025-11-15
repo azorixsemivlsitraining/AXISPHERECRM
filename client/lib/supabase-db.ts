@@ -144,6 +144,8 @@ export async function updateLead(id: string, updates: Partial<Lead>) {
     updateData.company_industries = updates.companyIndustries;
   if (updates.companyKeywords !== undefined)
     updateData.company_keywords = updates.companyKeywords;
+  if (updates.assignedTo !== undefined) updateData.assigned_to = updates.assignedTo;
+  if (updates.status !== undefined) updateData.status = updates.status;
 
   const { error } = await supabase
     .from("leads")
