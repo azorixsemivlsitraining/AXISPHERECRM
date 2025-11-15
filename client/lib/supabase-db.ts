@@ -388,8 +388,9 @@ export async function addCompany(
       .single();
 
     if (error) {
+      const errorMsg = error.message || error.code || "Unknown error";
       console.error("Error adding company:", error);
-      throw new Error(`Failed to add company: ${error.message}`);
+      throw new Error(`Failed to add company: ${errorMsg}`);
     }
 
     return mapCompanyData(data);
