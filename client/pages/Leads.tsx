@@ -842,8 +842,11 @@ export default function Leads() {
                       className={idx % 2 === 0 ? "bg-white" : "bg-slate-50"}
                     >
                       <td className="px-6 py-4 text-sm">
-                        <div>
-                          <p className="font-medium text-slate-900">
+                        <div
+                          onClick={() => setSelectedLeadForDetail(lead)}
+                          className="cursor-pointer hover:opacity-70 transition-opacity"
+                        >
+                          <p className="font-medium text-slate-900 hover:text-blue-600">
                             {lead.name}
                           </p>
                           {lead.jobTitle && (
