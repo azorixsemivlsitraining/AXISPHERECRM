@@ -33,49 +33,43 @@ export const handleGetCompanies: RequestHandler = async (req, res) => {
       "X-Api-Key": APOLLO_API_KEY,
     };
 
-    // Try to fetch from mixed_companies/search endpoint with higher limit to get all saved companies
-    const searchUrl = `${APOLLO_BASE_URL}/mixed_companies/search`;
+    // Fetch from /bookmarks endpoint to get saved/bookmarked companies
+    const bookmarksUrl = `${APOLLO_BASE_URL}/bookmarks`;
 
     console.log(
-      `[Companies] Calling ${searchUrl} with limit=${limit}, page=${page}`,
+      `[Companies] Calling ${bookmarksUrl} with limit=${limit}, page=${page}`,
     );
 
-    // Try fetching with a large limit to get all saved companies at once
     const effectiveLimit = Math.min(500, limit);
 
-    const searchResponse = await fetch(searchUrl, {
+    const bookmarksResponse = await fetch(bookmarksUrl, {
       method: "POST",
       headers,
       body: JSON.stringify({
         limit: effectiveLimit,
         page,
-        person_details: [],
-        organization_details: true,
-        show_suggestions: false,
-        reveal_personal_emails: false,
-        // Try to get only bookmarked/saved companies
-        bookmarked_only: true,
+        type: "organization",
       }),
     });
 
-    const responseText = await searchResponse.text();
-    console.log(`[Companies] Response status: ${searchResponse.status}`);
+    const responseText = await bookmarksResponse.text();
+    console.log(`[Companies] Response status: ${bookmarksResponse.status}`);
 
-    if (!searchResponse.ok) {
-      console.error(`[Companies] Search API error: ${searchResponse.status}`);
+    if (!bookmarksResponse.ok) {
+      console.error(`[Companies] Bookmarks API error: ${bookmarksResponse.status}`);
       console.error(
         `[Companies] Error response: ${responseText.substring(0, 300)}`,
       );
 
-      return res.status(searchResponse.status).json({
-        error: "Failed to fetch companies from Apollo",
-        status: searchResponse.status,
+      return res.status(bookmarksResponse.status).json({
+        error: "Failed to fetch saved companies from Apollo",
+        status: bookmarksResponse.status,
       });
     }
 
-    let searchData;
+    let bookmarksData;
     try {
-      searchData = JSON.parse(responseText);
+      bookmarksData = JSON.parse(responseText);
     } catch (e) {
       console.error(
         "[Companies] Failed to parse response:",
@@ -86,8 +80,9 @@ export const handleGetCompanies: RequestHandler = async (req, res) => {
       });
     }
 
-    const organizations = searchData.organizations || [];
-    console.log(`[Companies] Fetched ${organizations.length} companies`);
+    // Extract organizations from bookmarks response
+    const organizations = bookmarksData.bookmarks || bookmarksData.organizations || [];
+    console.log(`[Companies] Fetched ${organizations.length} saved companies`);
 
     // Map organizations to company format
     const companies = organizations
