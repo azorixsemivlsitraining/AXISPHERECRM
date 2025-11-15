@@ -886,6 +886,8 @@ export default function Leads() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleEditLead(lead)}
+                            disabled={!canEditLead(lead)}
+                            title={!canEditLead(lead) ? "You can only edit your assigned leads" : ""}
                           >
                             <Edit2 className="w-4 h-4" />
                           </Button>
@@ -893,7 +895,9 @@ export default function Leads() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleDeleteLead(lead.id)}
-                            className="text-red-600 hover:bg-red-50"
+                            disabled={!canDeleteLead(lead)}
+                            className="text-red-600 hover:bg-red-50 disabled:text-slate-400"
+                            title={!canDeleteLead(lead) ? "You can only delete your assigned leads" : ""}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
