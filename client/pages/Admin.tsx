@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { formatDateOnlyIST } from "@/lib/formatDateIST";
 
 export default function Admin() {
   const {
