@@ -109,6 +109,7 @@ export default function Admin() {
         setEditingId(null);
       } else {
         // Create new salesperson with auth
+        let authUserId: string | undefined;
         try {
           const { data: authData, error: authError } =
             await supabase.auth.signUp({
@@ -125,6 +126,9 @@ export default function Admin() {
           if (!authData.user) {
             throw new Error("No user returned from signup");
           }
+
+          authUserId = authData.user.id;
+          console.log("Auth user created with ID:", authUserId);
         } catch (authErr) {
           console.error("Auth signup error:", authErr);
           throw new Error(
@@ -132,10 +136,11 @@ export default function Admin() {
           );
         }
 
-        // Add salesperson record
+        // Add salesperson record with auth_id link
         const newSalesperson = await addSalesperson({
           ...formData,
           phoneNumber: formData.phoneNumber || "",
+          authId: authUserId,
         });
 
         toast({
