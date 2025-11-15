@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { handleApolloProxy } from "./routes/apollo";
+import { handleGetCompanies } from "./routes/companies";
 import {
   handleAuthSignIn,
   handleAuthSignUp,
