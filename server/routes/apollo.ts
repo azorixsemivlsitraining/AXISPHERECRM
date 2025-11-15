@@ -25,7 +25,7 @@ export const handleApolloProxy: RequestHandler = async (req, res) => {
 
     const headers: HeadersInit = {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${APOLLO_API_KEY}`,
+      "X-Api-Key": APOLLO_API_KEY,
     };
 
     const options: RequestInit = {
