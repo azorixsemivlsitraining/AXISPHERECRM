@@ -108,7 +108,7 @@ export default function Leads() {
         status: "Not lifted",
         note: "",
         nextReminderDate: "",
-        assignedTo: user?.id,
+        assignedTo: user?.role === "salesperson" ? user?.id : undefined,
       });
       setShowForm(false);
     } catch (error) {
@@ -286,7 +286,7 @@ export default function Leads() {
       status: "Not lifted",
       note: "",
       nextReminderDate: "",
-      assignedTo: user?.id,
+      assignedTo: user?.role === "salesperson" ? user?.id : undefined,
     });
   };
 
