@@ -9,4 +9,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create Supabase client with default configuration
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+  },
+});
