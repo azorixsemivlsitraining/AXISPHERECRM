@@ -8,7 +8,7 @@ export function useRoleBasedAccess() {
 
   // For now, we'll assume all authenticated users are salespersons
   // This can be extended to support different roles from the database
-  const userRole: UserRole = "salesperson";
+  const userRole: string = "salesperson";
 
   const canViewLead = (lead: Lead): boolean => {
     if (!user) return false;
