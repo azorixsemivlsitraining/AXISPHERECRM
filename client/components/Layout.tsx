@@ -23,9 +23,11 @@ export function MainLayout({ children }: LayoutProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">A</span>
-              </div>
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2F59bf3e928fc9473a97d5e87470c824bb%2F8211d605de7443fb8fd45193578c775d?format=webp&width=800"
+                alt="Axisphere Logo"
+                className="h-10 w-auto"
+              />
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">Axisphere</h1>
                 <p className="text-xs text-slate-500">Sales CRM</p>
