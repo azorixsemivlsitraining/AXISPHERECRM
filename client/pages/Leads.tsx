@@ -60,7 +60,7 @@ export default function Leads() {
     status: "Not lifted",
     note: "",
     nextReminderDate: "",
-    assignedTo: user?.id,
+    assignedTo: user?.role === "salesperson" ? user?.id : undefined,
   });
 
   const assignedLeads = leads.filter((lead) => lead.assignedTo === user?.id);
