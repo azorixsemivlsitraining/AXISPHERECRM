@@ -96,17 +96,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // For salesperson, use Supabase auth
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        console.error("Auth sign in error:", error);
-        throw error;
+      let data;
+      let error;
+      try {
+        const result = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        data = result.data;
+        error = result.error;
+      } catch (err) {
+        console.error("Auth sign in exception:", err);
+        throw new Error("Authentication service error. Please try again.");
       }
 
-      if (!data.user) {
+      if (error) {
+        const errorMessage = error.message || error.code || "Invalid email or password";
+        console.error("Auth sign in error:", error);
+        throw new Error(errorMessage);
+      }
+
+      if (!data?.user) {
         throw new Error("No user returned from login");
       }
 
