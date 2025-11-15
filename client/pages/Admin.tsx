@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { formatDateOnlyIST } from "@/lib/formatDateIST";
 
 export default function Admin() {
   const {
@@ -428,7 +429,7 @@ export default function Admin() {
                         {salesperson.phoneNumber || "-"}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-600">
-                        {new Date(salesperson.createdAt).toLocaleDateString()}
+                        {formatDateOnlyIST(salesperson.createdAt)}
                       </td>
                       <td className="px-6 py-4 text-sm">
                         <div className="flex gap-2">

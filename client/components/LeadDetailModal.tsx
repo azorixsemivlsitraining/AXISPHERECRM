@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { X, Trash2, Plus, Loader2 } from "lucide-react";
 import { getLeadNotes, addLeadNote, deleteLeadNote } from "@/lib/supabase-db";
 import { useToast } from "@/hooks/use-toast";
+import { formatActivityLogDate, formatDateOnlyIST } from "@/lib/formatDateIST";
 
 const LEAD_STATUSES: LeadStatus[] = [
   "Not lifted",
@@ -129,21 +130,6 @@ export function LeadDetailModal({
     }
   };
 
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return dateString;
-    }
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -222,7 +208,7 @@ export function LeadDetailModal({
                     Next Reminder
                   </label>
                   <p className="text-slate-900">
-                    {new Date(lead.nextReminderDate).toLocaleDateString()}
+                    {formatDateOnlyIST(lead.nextReminderDate)}
                   </p>
                 </div>
               )}
@@ -345,37 +331,56 @@ export function LeadDetailModal({
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
                 </div>
-              ) : notes.length === 0 ? (
-                <p className="text-slate-500 text-center py-8">
-                  No activity logs yet. Add your first note!
-                </p>
               ) : (
-                notes.map((note) => (
-                  <div
-                    key={note.id}
-                    className="border border-slate-200 rounded-lg p-4 space-y-2"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <p className="text-slate-900">{note.description}</p>
-                        {note.status && (
-                          <p className="text-sm text-blue-600 font-medium mt-1">
-                            ✓ {note.status}
+                <>
+                  {lead.note && (
+                    <div className="border border-blue-200 rounded-lg p-4 space-y-2 bg-blue-50">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-blue-700 mb-1">
+                            Main Note
                           </p>
-                        )}
+                          <p className="text-slate-900">{lead.note}</p>
+                        </div>
                       </div>
-                      <button
-                        onClick={() => handleDeleteNote(note.id)}
-                        className="text-slate-400 hover:text-red-600 ml-2"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <p className="text-xs text-slate-500">
+                        Created: {formatActivityLogDate(lead.createdAt)}
+                      </p>
                     </div>
-                    <p className="text-xs text-slate-500">
-                      {formatDate(note.createdAt)}
+                  )}
+                  {notes.length === 0 && !lead.note ? (
+                    <p className="text-slate-500 text-center py-8">
+                      No activity logs yet. Add your first note!
                     </p>
-                  </div>
-                ))
+                  ) : (
+                    notes.map((note) => (
+                      <div
+                        key={note.id}
+                        className="border border-slate-200 rounded-lg p-4 space-y-2"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p className="text-slate-900">{note.description}</p>
+                            {note.status && (
+                              <p className="text-sm text-blue-600 font-medium mt-1">
+                                ✓ {note.status}
+                              </p>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => handleDeleteNote(note.id)}
+                            className="text-slate-400 hover:text-red-600 ml-2"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <p className="text-xs text-slate-500">
+                          {formatActivityLogDate(note.createdAt)}
+                        </p>
+                      </div>
+                    ))
+                  )}
+                </>
               )}
             </div>
           </TabsContent>

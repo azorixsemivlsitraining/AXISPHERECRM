@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRoleBasedAccess } from "@/hooks/useRoleBasedAccess";
 import { LeadDetailModal } from "@/components/LeadDetailModal";
+import { formatDateOnlyIST } from "@/lib/formatDateIST";
 
 const LEAD_STATUSES: LeadStatus[] = [
   "Not lifted",
@@ -892,9 +893,7 @@ export default function Leads() {
                       <td className="px-6 py-4 text-sm text-slate-600">
                         {lead.nextReminderDate ? (
                           <span className="font-medium text-amber-600">
-                            {new Date(
-                              lead.nextReminderDate,
-                            ).toLocaleDateString()}
+                            {formatDateOnlyIST(lead.nextReminderDate)}
                           </span>
                         ) : (
                           "-"

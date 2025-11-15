@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, Edit2, Plus, Loader2, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { formatDateOnlyIST } from "@/lib/formatDateIST";
 
 export default function Salespersons() {
   const {
@@ -298,8 +299,7 @@ export default function Salespersons() {
 
                   <div className="mt-4 pt-4 border-t border-slate-200">
                     <p className="text-xs text-slate-500">
-                      Added:{" "}
-                      {new Date(salesperson.createdAt).toLocaleDateString()}
+                      Added: {formatDateOnlyIST(salesperson.createdAt)}
                     </p>
                   </div>
                 </div>

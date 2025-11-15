@@ -4,6 +4,7 @@ import { RemindersPanel } from "@/components/RemindersPanel";
 import { useCRMStore } from "@/hooks/useCRMStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { formatDateOnlyIST } from "@/lib/formatDateIST";
 import {
   Users,
   UserCheck,
@@ -155,7 +156,7 @@ export default function Index() {
                       </h4>
                       <span className="text-xs text-slate-500 flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        {new Date(lead.createdAt).toLocaleDateString()}
+                        {formatDateOnlyIST(lead.createdAt)}
                       </span>
                     </div>
                     <p className="text-sm text-slate-600">
@@ -208,7 +209,7 @@ export default function Index() {
                       </h4>
                       <span className="text-xs text-slate-500 flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        {new Date(person.createdAt).toLocaleDateString()}
+                        {formatDateOnlyIST(person.createdAt)}
                       </span>
                     </div>
                     {person.email && (
