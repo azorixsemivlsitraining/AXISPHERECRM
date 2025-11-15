@@ -209,7 +209,7 @@ export default function Index() {
                       </h4>
                       <span className="text-xs text-slate-500 flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        {new Date(person.createdAt).toLocaleDateString()}
+                        {formatDateOnlyIST(person.createdAt)}
                       </span>
                     </div>
                     {person.email && (
