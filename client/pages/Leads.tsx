@@ -893,9 +893,7 @@ export default function Leads() {
                       <td className="px-6 py-4 text-sm text-slate-600">
                         {lead.nextReminderDate ? (
                           <span className="font-medium text-amber-600">
-                            {new Date(
-                              lead.nextReminderDate,
-                            ).toLocaleDateString()}
+                            {formatDateOnlyIST(lead.nextReminderDate)}
                           </span>
                         ) : (
                           "-"
