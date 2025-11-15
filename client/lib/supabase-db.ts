@@ -160,6 +160,8 @@ export async function updateLead(id: string, updates: Partial<Lead>) {
     updateData.company_keywords = updates.companyKeywords;
   if (updates.assignedTo !== undefined) updateData.assigned_to = updates.assignedTo;
   if (updates.status !== undefined) updateData.status = updates.status;
+  if (updates.note !== undefined) updateData.note = updates.note;
+  if (updates.nextReminderDate !== undefined) updateData.next_reminder_date = updates.nextReminderDate;
 
   const { error } = await supabase
     .from("leads")
