@@ -939,6 +939,16 @@ export default function Leads() {
             </div>
           </div>
         )}
+
+        {/* Lead Detail Modal */}
+        {selectedLeadForDetail && (
+          <LeadDetailModal
+            lead={selectedLeadForDetail}
+            isOpen={!!selectedLeadForDetail}
+            onClose={() => setSelectedLeadForDetail(null)}
+            onUpdate={updateLead}
+          />
+        )}
       </div>
     </MainLayout>
   );
