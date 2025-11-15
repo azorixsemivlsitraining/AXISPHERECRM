@@ -52,6 +52,7 @@ export default function Companies() {
   const [savedCompaniesError, setSavedCompaniesError] = useState<string | null>(
     null,
   );
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // Search tab state
   const [searchQuery, setSearchQuery] = useState("");
