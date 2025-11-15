@@ -99,25 +99,14 @@ export default function Login() {
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-slate-600 text-sm">
-              Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="text-blue-600 hover:text-blue-700 font-medium"
-              >
-                Register here
-              </Link>
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg text-center">
+            <p className="text-xs text-blue-700 font-semibold mb-2">
+              Admin Login
             </p>
-          </div>
-
-          <div className="mt-6 p-4 bg-slate-50 rounded-lg text-center">
             <p className="text-xs text-slate-600">
-              Demo credentials:
+              Email: admin@axisphere.in
               <br />
-              Email: demo@example.com
-              <br />
-              Password: demo123
+              Password: admin2024
             </p>
           </div>
         </div>
