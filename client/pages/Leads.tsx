@@ -124,12 +124,30 @@ export default function Leads() {
   };
 
   const handleEditLead = (lead: Lead) => {
+    if (!canEditLead(lead)) {
+      toast({
+        title: "Error",
+        description: "You can only edit leads assigned to you",
+        variant: "destructive",
+      });
+      return;
+    }
     setFormData(lead);
     setEditingId(lead.id);
     setShowForm(true);
   };
 
   const handleDeleteLead = async (id: string) => {
+    const lead = leads.find((l) => l.id === id);
+    if (!lead || !canDeleteLead(lead)) {
+      toast({
+        title: "Error",
+        description: "You can only delete leads assigned to you",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (confirm("Are you sure you want to delete this lead?")) {
       try {
         await deleteLead(id);
