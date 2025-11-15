@@ -189,6 +189,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             id: userData.id,
             email: userData.email,
             name: userData.name,
+            role: "salesperson",
           });
         } else {
           throw new Error("Failed to retrieve created profile");
