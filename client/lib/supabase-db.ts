@@ -61,6 +61,8 @@ export async function getLeads(): Promise<Lead[]> {
       companyKeywords: item.company_keywords || [],
       assignedTo: item.assigned_to,
       status: item.status || "Not lifted",
+      note: item.note,
+      nextReminderDate: item.next_reminder_date,
       createdAt: item.created_at,
     }));
   } catch (err) {
