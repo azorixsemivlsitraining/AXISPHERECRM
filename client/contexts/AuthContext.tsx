@@ -83,6 +83,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
+      // Check if it's admin credentials
+      if (email === "admin@axisphere.in" && password === "admin2024") {
+        // For admin, we just set the user without Supabase auth
+        setUser({
+          id: "admin",
+          email: "admin@axisphere.in",
+          name: "Admin",
+          role: "admin",
+        });
+        return;
+      }
+
+      // For salesperson, use Supabase auth
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -117,6 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             id: userData.id,
             email: userData.email,
             name: userData.name,
+            role: "salesperson",
           });
         } else {
           throw new Error("No user profile found. Please contact support.");
