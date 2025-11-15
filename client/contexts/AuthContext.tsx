@@ -33,18 +33,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } = await supabase.auth.getSession();
 
       if (session?.user) {
-        const { data } = await supabase
-          .from("salespersons")
-          .select("id, name, email")
-          .eq("auth_id", session.user.id)
-          .single();
+        try {
+          const { data, error } = await supabase
+            .from("salespersons")
+            .select("id, name, email")
+            .eq("auth_id", session.user.id)
+            .single();
 
-        if (data) {
-          setUser({
-            id: data.id,
-            email: data.email,
-            name: data.name,
-          });
+          if (error) {
+            console.error("Error fetching salesperson record:", error);
+            return;
+          }
+
+          if (data) {
+            setUser({
+              id: data.id,
+              email: data.email,
+              name: data.name,
+            });
+          }
+        } catch (dbError) {
+          console.error("Database error during auth check:", dbError);
         }
       }
     } catch (error) {
