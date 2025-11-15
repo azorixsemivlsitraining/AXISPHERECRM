@@ -49,6 +49,7 @@ export function createServer() {
 
   // Companies API
   app.get("/api/companies", handleGetCompanies);
+  app.post("/api/sync-companies", handleSyncCompanies);
 
   // Apollo proxy
   app.post("/api/apollo", handleApolloProxy);
