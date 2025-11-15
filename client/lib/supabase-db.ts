@@ -107,10 +107,9 @@ export async function addLead(lead: Omit<Lead, "id" | "createdAt">) {
       .single();
 
     if (error) {
+      const errorMsg = error.message || error.code || "Unknown error";
       console.error("Error adding lead:", error);
-      throw new Error(
-        `Failed to add lead: ${error.message || "Unknown error"}`,
-      );
+      throw new Error(`Failed to add lead: ${errorMsg}`);
     }
 
     if (!data) {
