@@ -11,14 +11,13 @@ import {
 } from "@/lib/supabase-db";
 
 export type LeadStatus =
-  | "Not lifted"
-  | "Not connected"
-  | "Voice Message"
-  | "Quotation sent"
-  | "Site visit"
-  | "Advance payment"
-  | "Lead finished"
-  | "Contacted";
+  | "No Stage"
+  | "Appointment Schedule"
+  | "Presentation Done"
+  | "Proposal"
+  | "Negotiation"
+  | "Evaluation"
+  | "Result";
 
 export interface Lead {
   id: string;
