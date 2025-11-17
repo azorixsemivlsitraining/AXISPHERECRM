@@ -1,6 +1,7 @@
 import "dotenv/config";
-import express from "express";
+import express, { RequestHandler } from "express";
 import cors from "cors";
+import path from "path";
 import { handleDemo } from "./routes/demo";
 import { handleApolloProxy } from "./routes/apollo";
 import { handleGetCompanies } from "./routes/companies";
@@ -54,22 +55,22 @@ export function createServer() {
   // Apollo proxy
   app.post("/api/apollo", handleApolloProxy);
 
-  // SPA fallback - serve index.html for all non-API routes
-  app.use((_req, res, next) => {
-    // Only apply fallback to non-API routes
-    if (!_req.path.startsWith("/api")) {
-      // In development, Vite handles index.html
-      // In production, we serve the built index.html
-      if (process.env.NODE_ENV === "production") {
-        res.sendFile("dist/spa/index.html", { root: process.cwd() });
-      } else {
-        // For development, let Vite handle it
-        next();
-      }
+  // Serve static files in production
+  if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(process.cwd(), "dist/spa")));
+  }
+
+  // SPA fallback - serve index.html for all non-API routes (catch-all at the end)
+  const spaFallback: RequestHandler = (_req, res) => {
+    if (process.env.NODE_ENV === "production") {
+      res.sendFile(path.join(process.cwd(), "dist/spa/index.html"));
     } else {
-      next();
+      // In development, return a simple message - Vite will handle the actual page
+      res.send("<!DOCTYPE html><html><body>Not Found</body></html>");
     }
-  });
+  };
+
+  app.get("*", spaFallback);
 
   return app;
 }
