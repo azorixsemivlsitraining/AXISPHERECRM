@@ -32,20 +32,18 @@ function expressPlugin(): Plugin {
     configureServer(server) {
       const app = createServer();
 
+      // Add SPA routing middleware before Express to handle client-side routes
+      server.middlewares.use((req, res, next) => {
+        // If the request is for a non-existent file and doesn't start with /api,
+        // serve index.html to let React Router handle it
+        if (!req.url.startsWith("/api") && !req.url.includes(".")) {
+          req.url = "/index.html";
+        }
+        next();
+      });
+
       // Add Express app as middleware to Vite dev server
       server.middlewares.use(app);
-
-      // Return middleware to handle SPA routing
-      return () => {
-        server.middlewares.use((req, res, next) => {
-          // If the request is for a non-existent file and doesn't start with /api,
-          // serve index.html to let React Router handle it
-          if (!req.url.startsWith("/api") && !req.url.includes(".")) {
-            req.url = "/index.html";
-          }
-          next();
-        });
-      };
     },
   };
 }
