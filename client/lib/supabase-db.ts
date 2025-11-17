@@ -161,38 +161,34 @@ export async function addLead(lead: Omit<Lead, "id" | "createdAt">) {
 }
 
 export async function updateLead(id: string, updates: Partial<Lead>) {
-  const updateData: any = {};
+  try {
+    // Use server-side endpoint to bypass RLS restrictions
+    const response = await fetch("/api/leads/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        leadId: id,
+        updates,
+      }),
+    });
 
-  if (updates.name !== undefined) updateData.name = updates.name;
-  if (updates.jobTitle !== undefined) updateData.job_title = updates.jobTitle;
-  if (updates.company !== undefined) updateData.company = updates.company;
-  if (updates.email !== undefined) updateData.email = updates.email;
-  if (updates.phoneNumbers !== undefined)
-    updateData.phone_numbers = updates.phoneNumbers;
-  if (updates.actions !== undefined) updateData.actions = updates.actions;
-  if (updates.links !== undefined) updateData.links = updates.links;
-  if (updates.locations !== undefined) updateData.locations = updates.locations;
-  if (updates.companyEmployees !== undefined)
-    updateData.company_employees = updates.companyEmployees;
-  if (updates.companyIndustries !== undefined)
-    updateData.company_industries = updates.companyIndustries;
-  if (updates.companyKeywords !== undefined)
-    updateData.company_keywords = updates.companyKeywords;
-  if (updates.assignedTo !== undefined)
-    updateData.assigned_to = updates.assignedTo;
-  if (updates.status !== undefined) updateData.status = updates.status;
-  if (updates.note !== undefined) updateData.note = updates.note;
-  if (updates.nextReminderDate !== undefined)
-    updateData.next_reminder_date = updates.nextReminderDate;
+    if (!response.ok) {
+      const errorData = await response.json();
+      const errorMessage =
+        errorData.details || errorData.error || "Unknown error";
+      console.error("Error updating lead:", errorMessage);
+      throw new Error(`Failed to update lead: ${errorMessage}`);
+    }
 
-  const { error } = await supabase
-    .from("leads")
-    .update(updateData)
-    .eq("id", id);
-
-  if (error) {
-    console.error("Error updating lead:", error);
-    throw error;
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.error || "Failed to update lead");
+    }
+  } catch (err) {
+    console.error("Exception updating lead:", err);
+    throw err;
   }
 }
 

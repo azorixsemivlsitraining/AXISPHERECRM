@@ -12,6 +12,7 @@ import {
   handleAuthSignOut,
   handleAuthSession,
 } from "./routes/auth";
+import { handleUpdateLead } from "./routes/leads";
 
 export function createServer() {
   const app = express();
@@ -51,6 +52,9 @@ export function createServer() {
   // Companies API
   app.get("/api/companies", handleGetCompanies);
   app.post("/api/sync-companies", handleSyncCompanies);
+
+  // Leads API
+  app.post("/api/leads/update", handleUpdateLead);
 
   // Apollo proxy
   app.post("/api/apollo", handleApolloProxy);
