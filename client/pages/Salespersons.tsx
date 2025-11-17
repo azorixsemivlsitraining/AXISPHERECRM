@@ -16,6 +16,7 @@ export default function Salespersons() {
     updateSalesperson,
     isLoading,
   } = useCRMStore();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
