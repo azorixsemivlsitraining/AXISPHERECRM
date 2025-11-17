@@ -180,7 +180,7 @@ export default function LeadsDashboard() {
                 ? "border-blue-400 bg-blue-50 shadow-md"
                 : "border-slate-200"
             }`}
-            onDragOver={handleDragOver}
+            onDragOver={(e) => handleDragOver(e, selectedStatus)}
             onDragLeave={handleDragLeave}
             onDrop={() => handleDrop(selectedStatus)}
           >
