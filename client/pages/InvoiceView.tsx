@@ -468,16 +468,22 @@ export default function InvoiceView() {
           {/* Page 2: Scope/Features */}
           {currentPage === 2 && (
             <div className="p-12 min-h-screen bg-white">
-              <div className="flex justify-between items-start mb-12">
-                <div>
-                  <img
-                    src={companyInfo.logo}
-                    alt="Axisphere"
-                    className="h-12 mb-2"
-                  />
-                  <h1 className="text-4xl font-bold text-purple-600 mb-2">
-                    Axisphere Invoice Bill
-                  </h1>
+               <div className="flex justify-between items-start mb-12">
+      <div>
+        <img
+          src={companyInfo.logo}
+          alt="Axisphere"
+          className="h-12 mb-2"
+        />
+
+        <h1 className="text-3xl font-bold text-black mb-1">
+          Axisphere Media Worx LLP
+        </h1>
+
+        <h2 className="text-xl font-semibold text-black mb-3">
+          Invoice Bill
+        </h2>
+      </div>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold text-slate-900">
