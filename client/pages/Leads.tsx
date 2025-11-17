@@ -172,6 +172,16 @@ export default function Leads() {
   };
 
   const handleAutoAssign = async () => {
+    // Check permission
+    if (!canAutoAssignLeads()) {
+      toast({
+        title: "Error",
+        description: "Only admins can auto-assign leads",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (salespersons.length === 0) {
       toast({
         title: "Error",
@@ -181,20 +191,24 @@ export default function Leads() {
       return;
     }
 
-    if (leads.length === 0) {
+    // Only assign unassigned leads to avoid unnecessary updates
+    const unassignedLeads = leads.filter((lead) => !lead.assignedTo);
+
+    if (unassignedLeads.length === 0) {
       toast({
         title: "Info",
-        description: "No leads to assign",
+        description: "All leads are already assigned",
       });
       return;
     }
 
     try {
-      const leadsPerPerson = Math.ceil(leads.length / salespersons.length);
+      setIsSubmitting(true);
+      const leadsPerPerson = Math.ceil(unassignedLeads.length / salespersons.length);
       let salesPersonIndex = 0;
       let leadsAssignedThisPerson = 0;
 
-      for (const lead of leads) {
+      for (const lead of unassignedLeads) {
         if (leadsAssignedThisPerson >= leadsPerPerson) {
           salesPersonIndex++;
           leadsAssignedThisPerson = 0;
@@ -206,7 +220,6 @@ export default function Leads() {
         }
 
         await updateLead(lead.id, {
-          ...lead,
           assignedTo: salespersons[salesPersonIndex].id,
         });
 
@@ -215,7 +228,7 @@ export default function Leads() {
 
       toast({
         title: "Success",
-        description: `${leads.length} leads distributed equally among ${salespersons.length} salesperson(s)`,
+        description: `${unassignedLeads.length} leads assigned to ${salespersons.length} salesperson(s)`,
       });
     } catch (error) {
       toast({
@@ -224,6 +237,8 @@ export default function Leads() {
         variant: "destructive",
       });
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
