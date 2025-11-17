@@ -39,6 +39,8 @@ export default function LeadsDashboard() {
   const { leads, salespersons, isLoading, updateLead } = useCRMStore();
   const [selectedStatus, setSelectedStatus] = useState<LeadStatus | null>(null);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [draggingLead, setDraggingLead] = useState<Lead | null>(null);
+  const [dragOverStatus, setDragOverStatus] = useState<LeadStatus | null>(null);
 
   if (isLoading) {
     return (
@@ -80,6 +82,43 @@ export default function LeadsDashboard() {
     if (!assignedTo) return "Unassigned";
     const salesperson = salespersons.find((sp) => sp.id === assignedTo);
     return salesperson?.name || "Unknown";
+  };
+
+  const handleDragStart = (lead: Lead) => {
+    setDraggingLead(lead);
+  };
+
+  const handleDragEnd = () => {
+    setDraggingLead(null);
+    setDragOverStatus(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent, status: LeadStatus) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverStatus(status);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    if (e.currentTarget === e.target) {
+      setDragOverStatus(null);
+    }
+  };
+
+  const handleDrop = async (status: LeadStatus) => {
+    if (!draggingLead) return;
+
+    const currentStatus = (draggingLead.status || "No Stage") as LeadStatus;
+    if (currentStatus !== status) {
+      try {
+        await updateLead(draggingLead.id, { status });
+      } catch (error) {
+        console.error("Error updating lead status:", error);
+      }
+    }
+
+    setDraggingLead(null);
+    setDragOverStatus(null);
   };
 
   return (
@@ -135,7 +174,16 @@ export default function LeadsDashboard() {
         {/* Leads Display */}
         {selectedStatus ? (
           // Filtered view for selected status
-          <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <div
+            className={`bg-white rounded-lg border-2 p-6 transition-all ${
+              dragOverStatus === selectedStatus
+                ? "border-blue-400 bg-blue-50 shadow-md"
+                : "border-slate-200"
+            }`}
+            onDragOver={(e) => handleDragOver(e, selectedStatus)}
+            onDragLeave={handleDragLeave}
+            onDrop={() => handleDrop(selectedStatus)}
+          >
             <div className="mb-4 flex items-center gap-3">
               <h2 className="text-2xl font-semibold text-slate-900">
                 {selectedStatus}
@@ -157,7 +205,14 @@ export default function LeadsDashboard() {
                     <button
                       key={lead.id}
                       onClick={() => setSelectedLead(lead)}
-                      className="text-left flex items-start justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer"
+                      draggable
+                      onDragStart={() => handleDragStart(lead)}
+                      onDragEnd={handleDragEnd}
+                      className={`text-left flex items-start justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all cursor-grab active:cursor-grabbing ${
+                        draggingLead?.id === lead.id
+                          ? "opacity-50"
+                          : "opacity-100"
+                      }`}
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-2">
@@ -225,7 +280,17 @@ export default function LeadsDashboard() {
               return (
                 <div
                   key={status}
-                  className="bg-white rounded-lg border border-slate-200 p-6"
+                  className={`bg-white rounded-lg border-2 p-6 transition-all min-h-48 ${
+                    dragOverStatus === status
+                      ? "border-blue-400 bg-blue-50 shadow-lg"
+                      : "border-slate-200"
+                  } ${count === 0 ? "opacity-60" : ""}`}
+                  onDragOver={(e) => handleDragOver(e, status)}
+                  onDragLeave={() => setDragOverStatus(null)}
+                  onDrop={() => {
+                    setDragOverStatus(null);
+                    handleDrop(status);
+                  }}
                 >
                   <div className="mb-4 flex items-center gap-3">
                     <h2 className="text-xl font-semibold text-slate-900">
@@ -236,55 +301,68 @@ export default function LeadsDashboard() {
                     </span>
                   </div>
 
-                  <div className="grid gap-3">
-                    {statusLeads.slice(0, 3).map((lead) => (
-                      <button
-                        key={lead.id}
-                        onClick={() => setSelectedLead(lead)}
-                        className="text-left flex items-start justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-base font-semibold text-slate-900 truncate">
-                              {lead.name}
-                            </h3>
-                            <span
-                              className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${STATUS_COLORS[status]}`}
-                            >
-                              {status}
-                            </span>
-                          </div>
+                  {count === 0 ? (
+                    <div className="py-8 text-center text-slate-400">
+                      <p>No leads - drag to move leads here</p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-3">
+                      {statusLeads.slice(0, 3).map((lead) => (
+                        <button
+                          key={lead.id}
+                          onClick={() => setSelectedLead(lead)}
+                          draggable
+                          onDragStart={() => handleDragStart(lead)}
+                          onDragEnd={handleDragEnd}
+                          className={`text-left flex items-start justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all cursor-grab active:cursor-grabbing ${
+                            draggingLead?.id === lead.id
+                              ? "opacity-50 ring-2 ring-blue-400"
+                              : "opacity-100"
+                          }`}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="text-base font-semibold text-slate-900 truncate">
+                                {lead.name}
+                              </h3>
+                              <span
+                                className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${STATUS_COLORS[status]}`}
+                              >
+                                {status}
+                              </span>
+                            </div>
 
-                          <div className="grid grid-cols-2 gap-3 text-sm">
-                            <div>
-                              <p className="text-slate-600 font-medium">
-                                Company
-                              </p>
-                              <p className="text-slate-900">
-                                {lead.company || "N/A"}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-slate-600 font-medium">
-                                Assigned To
-                              </p>
-                              <p className="text-slate-900">
-                                {getSalespersonName(lead.assignedTo)}
-                              </p>
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                              <div>
+                                <p className="text-slate-600 font-medium">
+                                  Company
+                                </p>
+                                <p className="text-slate-900">
+                                  {lead.company || "N/A"}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-slate-600 font-medium">
+                                  Assigned To
+                                </p>
+                                <p className="text-slate-900">
+                                  {getSalespersonName(lead.assignedTo)}
+                                </p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </button>
-                    ))}
-                    {count > 3 && (
-                      <button
-                        onClick={() => setSelectedStatus(status)}
-                        className="py-2 px-4 text-center text-blue-600 hover:text-blue-700 font-medium text-sm"
-                      >
-                        View all {count} leads →
-                      </button>
-                    )}
-                  </div>
+                        </button>
+                      ))}
+                      {count > 3 && (
+                        <button
+                          onClick={() => setSelectedStatus(status)}
+                          className="py-2 px-4 text-center text-blue-600 hover:text-blue-700 font-medium text-sm"
+                        >
+                          View all {count} leads →
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
