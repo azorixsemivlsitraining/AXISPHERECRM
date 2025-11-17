@@ -47,6 +47,7 @@ export async function getLeads(): Promise<Lead[]> {
     const { data, error } = await supabase
       .from("leads")
       .select("*")
+      .eq("is_deleted", false)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -58,7 +59,6 @@ export async function getLeads(): Promise<Lead[]> {
         "Details:",
         error.details,
       );
-      // Return empty array instead of throwing to allow graceful degradation
       return [];
     }
 
@@ -78,7 +78,7 @@ export async function getLeads(): Promise<Lead[]> {
       companyIndustries: item.company_industries || [],
       companyKeywords: item.company_keywords || [],
       assignedTo: item.assigned_to,
-      status: item.status || "Not lifted",
+      status: item.status || "No Stage",
       note: item.note,
       nextReminderDate: item.next_reminder_date,
       createdAt: item.created_at,
