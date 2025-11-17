@@ -78,14 +78,84 @@ export default function LeadsDashboard() {
     return salesperson?.name || "Unknown";
   };
 
+  const leadsGroupedByStatus: Record<LeadStatus, Lead[]> = {
+    "No Stage": [],
+    "Appointment Schedule": [],
+    "Presentation Done": [],
+    Proposal: [],
+    Negotiation: [],
+    Evaluation: [],
+    Result: [],
+  };
+
+  leads.forEach((lead) => {
+    const status = (lead.status || "No Stage") as LeadStatus;
+    if (leadsGroupedByStatus[status]) {
+      leadsGroupedByStatus[status].push(lead);
+    } else {
+      leadsGroupedByStatus["No Stage"].push(lead);
+    }
+  });
+
+  const displayLeads = selectedStatus
+    ? leadsGroupedByStatus[selectedStatus]
+    : leads;
+
+  const getSalespersonName = (assignedTo?: string) => {
+    if (!assignedTo) return "Unassigned";
+    const salesperson = salespersons.find((sp) => sp.id === assignedTo);
+    return salesperson?.name || "Unknown";
+  };
+
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Leads Dashboard</h1>
-          <p className="text-slate-600 mt-1">View all leads grouped by status</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">Leads Dashboard</h1>
+            <p className="text-slate-600 mt-1">
+              {selectedStatus
+                ? `Leads in ${selectedStatus}`
+                : "View all leads grouped by status"}
+            </p>
+          </div>
+          {selectedStatus && (
+            <button
+              onClick={() => setSelectedStatus(null)}
+              className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-900 rounded-lg font-medium transition-colors flex items-center gap-2"
+            >
+              <X className="w-4 h-4" />
+              Clear Filter
+            </button>
+          )}
         </div>
 
+        {/* Status Cards Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
+          {LEAD_STATUSES.map((status) => {
+            const count = leadsGroupedByStatus[status].length;
+            const isSelected = selectedStatus === status;
+
+            return (
+              <button
+                key={status}
+                onClick={() => setSelectedStatus(isSelected ? null : status)}
+                className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${
+                  isSelected
+                    ? `border-blue-500 bg-blue-50 shadow-md`
+                    : `${STATUS_BG_COLORS[status]} border-2`
+                }`}
+              >
+                <p className="text-xs text-slate-600 font-medium mb-1 truncate">
+                  {status}
+                </p>
+                <p className="text-2xl font-bold text-slate-900">{count}</p>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Leads Display */}
         <div className="space-y-6">
           {LEAD_STATUSES.map((status) => {
             const statusLeads = leadsGroupedByStatus[status];
