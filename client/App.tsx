@@ -14,6 +14,9 @@ import Salespersons from "./pages/Salespersons";
 import Companies from "./pages/Companies";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
+import CreateInvoice from "./pages/CreateInvoice";
+import InvoiceView from "./pages/InvoiceView";
+import InvoicesList from "./pages/InvoicesList";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -93,6 +96,30 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Companies />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/create-invoice/:packageId"
+              element={
+                <ProtectedRoute>
+                  <CreateInvoice />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/invoice/:invoiceId"
+              element={
+                <ProtectedRoute>
+                  <InvoiceView />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/invoices"
+              element={
+                <ProtectedRoute>
+                  <InvoicesList />
                 </ProtectedRoute>
               }
             />

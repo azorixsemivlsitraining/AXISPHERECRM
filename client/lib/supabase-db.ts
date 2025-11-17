@@ -684,3 +684,183 @@ export async function deleteLeadNote(noteId: string) {
     throw err;
   }
 }
+
+// PACKAGES AND INVOICES
+
+export interface Package {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  features: string[];
+  createdAt: string;
+}
+
+export interface InvoiceFeature {
+  name: string;
+  included: boolean;
+}
+
+export interface Invoice {
+  id: string;
+  invoiceNumber: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  companyName: string;
+  packageId: string;
+  packageName: string;
+  packagePrice: number;
+  scope: InvoiceFeature[];
+  paidAmount: number;
+  additionalNotes: string;
+  taxPercentage: number;
+  createdAt: string;
+}
+
+// INVOICE OPERATIONS
+export async function getInvoices(): Promise<Invoice[]> {
+  try {
+    const { data, error } = await supabase
+      .from("invoices")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching invoices:", error);
+      return [];
+    }
+
+    if (!data) return [];
+
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      invoiceNumber: item.invoice_number,
+      fullName: item.full_name,
+      email: item.email,
+      phoneNumber: item.phone_number,
+      companyName: item.company_name,
+      packageId: item.package_id,
+      packageName: item.package_name,
+      packagePrice: item.package_price,
+      scope: item.scope || [],
+      paidAmount: item.paid_amount,
+      additionalNotes: item.additional_notes,
+      taxPercentage: item.tax_percentage || 18,
+      createdAt: item.created_at,
+    }));
+  } catch (err) {
+    console.error("Exception fetching invoices:", err);
+    return [];
+  }
+}
+
+export async function addInvoice(
+  invoice: Omit<Invoice, "id" | "invoiceNumber" | "createdAt">,
+): Promise<Invoice> {
+  try {
+    const invoiceNumber = `AXI-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(Math.floor(Math.random() * 10000)).padStart(5, "0")}`;
+
+    const { data, error } = await supabase
+      .from("invoices")
+      .insert([
+        {
+          invoice_number: invoiceNumber,
+          full_name: invoice.fullName,
+          email: invoice.email,
+          phone_number: invoice.phoneNumber,
+          company_name: invoice.companyName,
+          package_id: invoice.packageId,
+          package_name: invoice.packageName,
+          package_price: invoice.packagePrice,
+          scope: invoice.scope,
+          paid_amount: invoice.paidAmount,
+          additional_notes: invoice.additionalNotes,
+          tax_percentage: invoice.taxPercentage,
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error adding invoice:", error);
+      const errorMsg = String(error?.message || error?.code || "Unknown error");
+      throw new Error(`Failed to add invoice: ${errorMsg}`);
+    }
+
+    if (!data) {
+      throw new Error("No data returned from insert");
+    }
+
+    return {
+      id: data.id,
+      invoiceNumber: data.invoice_number,
+      fullName: data.full_name,
+      email: data.email,
+      phoneNumber: data.phone_number,
+      companyName: data.company_name,
+      packageId: data.package_id,
+      packageName: data.package_name,
+      packagePrice: data.package_price,
+      scope: data.scope || [],
+      paidAmount: data.paid_amount,
+      additionalNotes: data.additional_notes,
+      taxPercentage: data.tax_percentage || 0,
+      createdAt: data.created_at,
+    };
+  } catch (err) {
+    console.error("Exception adding invoice:", err);
+    throw err;
+  }
+}
+
+export async function getInvoiceById(id: string): Promise<Invoice | null> {
+  try {
+    const { data, error } = await supabase
+      .from("invoices")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error("Error fetching invoice:", error);
+      return null;
+    }
+
+    if (!data) return null;
+
+    return {
+      id: data.id,
+      invoiceNumber: data.invoice_number,
+      fullName: data.full_name,
+      email: data.email,
+      phoneNumber: data.phone_number,
+      companyName: data.company_name,
+      packageId: data.package_id,
+      packageName: data.package_name,
+      packagePrice: data.package_price,
+      scope: data.scope || [],
+      paidAmount: data.paid_amount,
+      additionalNotes: data.additional_notes,
+      taxPercentage: data.tax_percentage || 0,
+      createdAt: data.created_at,
+    };
+  } catch (err) {
+    console.error("Exception fetching invoice:", err);
+    return null;
+  }
+}
+
+export async function deleteInvoice(id: string) {
+  try {
+    const { error } = await supabase.from("invoices").delete().eq("id", id);
+
+    if (error) {
+      console.error("Error deleting invoice:", error);
+      throw error;
+    }
+  } catch (err) {
+    console.error("Exception deleting invoice:", err);
+    throw err;
+  }
+}
