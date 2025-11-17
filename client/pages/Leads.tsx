@@ -285,7 +285,7 @@ export default function Leads() {
       companyEmployees: "",
       companyIndustries: [""],
       companyKeywords: [""],
-      status: "Not lifted",
+      status: "No Stage",
       note: "",
       nextReminderDate: "",
       assignedTo: user?.role === "salesperson" ? user?.id : undefined,
