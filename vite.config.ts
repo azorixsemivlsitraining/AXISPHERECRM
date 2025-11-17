@@ -33,8 +33,20 @@ function expressPlugin(): Plugin {
     configureServer(server) {
       const app = createServer();
 
-      // Add Express app as middleware to Vite dev server
-      server.middlewares.use(app);
+      // Return a handler function that processes before Vite's built-in middlewares
+      return () => {
+        server.middlewares.use("/api", app); // Only mount Express for /api routes
+
+        // Add a catch-all middleware for SPA routing that serves index.html
+        server.middlewares.use((req, res, next) => {
+          // If the request is for a non-existent file and doesn't start with /api,
+          // serve index.html to let React Router handle it
+          if (!req.url.startsWith("/api") && !req.url.includes(".")) {
+            req.url = "/index.html";
+          }
+          next();
+        });
+      };
     },
   };
 }
