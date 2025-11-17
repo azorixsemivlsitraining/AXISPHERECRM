@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import Leads from "./pages/Leads";
+import LeadsDashboard from "./pages/LeadsDashboard";
 import Salespersons from "./pages/Salespersons";
 import Companies from "./pages/Companies";
 import Login from "./pages/Login";
