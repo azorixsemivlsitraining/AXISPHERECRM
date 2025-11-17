@@ -26,6 +26,7 @@ export default function CreateInvoice() {
     companyName: "",
     paidAmount: selectedPackage?.price || 0,
     additionalNotes: "",
+    taxPercentage: 0,
   });
 
   const [selectedFeatures, setSelectedFeatures] = useState<
