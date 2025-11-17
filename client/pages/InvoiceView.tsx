@@ -456,7 +456,7 @@ export default function InvoiceView() {
                     className="h-12 mb-2"
                   />
                   <h1 className="text-4xl font-bold text-purple-600 mb-2">
-                    Axisphere
+                    Axisphere Invoice Bill
                   </h1>
                 </div>
                 <div className="text-right">
