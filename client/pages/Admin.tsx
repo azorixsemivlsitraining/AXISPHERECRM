@@ -3,7 +3,7 @@ import { MainLayout } from "@/components/Layout";
 import { Salesperson, useCRMStore } from "@/hooks/useCRMStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, Edit2, Plus, X, Loader2, LogOut } from "lucide-react";
+import { Trash2, Edit2, Plus, X, Loader2, LogOut, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
