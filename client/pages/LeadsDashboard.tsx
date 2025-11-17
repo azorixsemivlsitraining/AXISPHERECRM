@@ -105,8 +105,15 @@ export default function LeadsDashboard() {
     }
   };
 
-  const handleDrop = async (status: LeadStatus) => {
-    if (!draggingLead) return;
+  const handleDrop = async (e: React.DragEvent, status: LeadStatus) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!draggingLead) {
+      setDraggingLead(null);
+      setDragOverStatus(null);
+      return;
+    }
 
     const currentStatus = (draggingLead.status || "No Stage") as LeadStatus;
     if (currentStatus !== status) {
@@ -182,7 +189,7 @@ export default function LeadsDashboard() {
             }`}
             onDragOver={(e) => handleDragOver(e, selectedStatus)}
             onDragLeave={handleDragLeave}
-            onDrop={() => handleDrop(selectedStatus)}
+            onDrop={(e) => handleDrop(e, selectedStatus)}
           >
             <div className="mb-4 flex items-center gap-3">
               <h2 className="text-2xl font-semibold text-slate-900">
@@ -286,11 +293,8 @@ export default function LeadsDashboard() {
                       : "border-slate-200"
                   } ${count === 0 ? "opacity-60" : ""}`}
                   onDragOver={(e) => handleDragOver(e, status)}
-                  onDragLeave={() => setDragOverStatus(null)}
-                  onDrop={() => {
-                    setDragOverStatus(null);
-                    handleDrop(status);
-                  }}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, status)}
                 >
                   <div className="mb-4 flex items-center gap-3">
                     <h2 className="text-xl font-semibold text-slate-900">
