@@ -55,8 +55,20 @@ export function createServer() {
   app.post("/api/apollo", handleApolloProxy);
 
   // SPA fallback - serve index.html for all non-API routes
-  app.get("*", (_req, res) => {
-    res.sendFile("index.html", { root: process.cwd() });
+  app.use((_req, res, next) => {
+    // Only apply fallback to non-API routes
+    if (!_req.path.startsWith("/api")) {
+      // In development, Vite handles index.html
+      // In production, we serve the built index.html
+      if (process.env.NODE_ENV === "production") {
+        res.sendFile("dist/spa/index.html", { root: process.cwd() });
+      } else {
+        // For development, let Vite handle it
+        next();
+      }
+    } else {
+      next();
+    }
   });
 
   return app;
