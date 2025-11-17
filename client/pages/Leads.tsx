@@ -204,7 +204,9 @@ export default function Leads() {
 
     try {
       setIsSubmitting(true);
-      const leadsPerPerson = Math.ceil(unassignedLeads.length / salespersons.length);
+      const leadsPerPerson = Math.ceil(
+        unassignedLeads.length / salespersons.length,
+      );
       let salesPersonIndex = 0;
       let leadsAssignedThisPerson = 0;
 

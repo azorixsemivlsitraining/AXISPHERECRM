@@ -21,17 +21,17 @@ const adminSupabase =
 export const handleUpdateLead: RequestHandler = async (req, res) => {
   try {
     if (!adminSupabase) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: "Server configuration error: service role key not configured",
-        details: "SUPABASE_SERVICE_ROLE_KEY is not set"
+        details: "SUPABASE_SERVICE_ROLE_KEY is not set",
       });
     }
 
     const { leadId, updates } = req.body;
 
     if (!leadId || !updates) {
-      return res.status(400).json({ 
-        error: "Missing required fields: leadId and updates" 
+      return res.status(400).json({
+        error: "Missing required fields: leadId and updates",
       });
     }
 
@@ -46,7 +46,8 @@ export const handleUpdateLead: RequestHandler = async (req, res) => {
       updateData.phone_numbers = updates.phoneNumbers;
     if (updates.actions !== undefined) updateData.actions = updates.actions;
     if (updates.links !== undefined) updateData.links = updates.links;
-    if (updates.locations !== undefined) updateData.locations = updates.locations;
+    if (updates.locations !== undefined)
+      updateData.locations = updates.locations;
     if (updates.companyEmployees !== undefined)
       updateData.company_employees = updates.companyEmployees;
     if (updates.companyIndustries !== undefined)
@@ -68,15 +69,15 @@ export const handleUpdateLead: RequestHandler = async (req, res) => {
 
     if (error) {
       console.error("Error updating lead:", error);
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: "Failed to update lead",
-        details: error.message
+        details: error.message,
       });
     }
 
-    res.json({ 
+    res.json({
       success: true,
-      message: "Lead updated successfully"
+      message: "Lead updated successfully",
     });
   } catch (error) {
     console.error("Lead update error:", error);

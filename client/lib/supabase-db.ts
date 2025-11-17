@@ -176,7 +176,8 @@ export async function updateLead(id: string, updates: Partial<Lead>) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      const errorMessage = errorData.details || errorData.error || "Unknown error";
+      const errorMessage =
+        errorData.details || errorData.error || "Unknown error";
       console.error("Error updating lead:", errorMessage);
       throw new Error(`Failed to update lead: ${errorMessage}`);
     }
