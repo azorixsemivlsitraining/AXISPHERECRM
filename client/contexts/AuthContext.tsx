@@ -94,29 +94,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // For salesperson, use Supabase auth
-      let data;
-      let error;
+      // For salesperson, use server-side auth to avoid response body issues
+      let responseData;
       try {
-        const result = await supabase.auth.signInWithPassword({
-          email,
-          password,
+        const response = await fetch("/api/auth/sign-in", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
         });
-        data = result.data;
-        error = result.error;
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          const errorMessage =
+            errorData.error || "Invalid email or password";
+          console.error("Auth sign in error:", errorMessage);
+          throw new Error(errorMessage);
+        }
+
+        responseData = await response.json();
       } catch (err) {
+        if (err instanceof Error) {
+          throw err;
+        }
         console.error("Auth sign in exception:", err);
         throw new Error("Authentication service error. Please try again.");
       }
 
-      if (error) {
-        const errorMessage =
-          error.message || error.code || "Invalid email or password";
-        console.error("Auth sign in error:", error);
-        throw new Error(errorMessage);
-      }
-
-      if (!data?.user) {
+      if (!responseData?.user) {
         throw new Error("No user returned from login");
       }
 
@@ -124,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data: userData, error: dbError } = await supabase
           .from("salespersons")
           .select("id, name, email")
-          .eq("auth_id", data.user.id)
+          .eq("auth_id", responseData.user.id)
           .single();
 
         if (dbError) {
