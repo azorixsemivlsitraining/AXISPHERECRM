@@ -72,31 +72,6 @@ export default function LeadsDashboard() {
     }
   });
 
-  const getSalespersonName = (assignedTo?: string) => {
-    if (!assignedTo) return "Unassigned";
-    const salesperson = salespersons.find((sp) => sp.id === assignedTo);
-    return salesperson?.name || "Unknown";
-  };
-
-  const leadsGroupedByStatus: Record<LeadStatus, Lead[]> = {
-    "No Stage": [],
-    "Appointment Schedule": [],
-    "Presentation Done": [],
-    Proposal: [],
-    Negotiation: [],
-    Evaluation: [],
-    Result: [],
-  };
-
-  leads.forEach((lead) => {
-    const status = (lead.status || "No Stage") as LeadStatus;
-    if (leadsGroupedByStatus[status]) {
-      leadsGroupedByStatus[status].push(lead);
-    } else {
-      leadsGroupedByStatus["No Stage"].push(lead);
-    }
-  });
-
   const displayLeads = selectedStatus
     ? leadsGroupedByStatus[selectedStatus]
     : leads;
