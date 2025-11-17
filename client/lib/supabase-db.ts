@@ -215,6 +215,7 @@ export async function getSalespersons(): Promise<Salesperson[]> {
     const { data, error } = await supabase
       .from("salespersons")
       .select("*")
+      .eq("is_deleted", false)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -226,7 +227,6 @@ export async function getSalespersons(): Promise<Salesperson[]> {
         "Details:",
         error.details,
       );
-      // Return empty array instead of throwing to allow graceful degradation
       return [];
     }
 
