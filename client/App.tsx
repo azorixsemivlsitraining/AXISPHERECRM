@@ -99,6 +99,30 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/create-invoice/:packageId"
+              element={
+                <ProtectedRoute>
+                  <CreateInvoice />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/invoice/:invoiceId"
+              element={
+                <ProtectedRoute>
+                  <InvoiceView />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/invoices"
+              element={
+                <ProtectedRoute>
+                  <InvoicesList />
+                </ProtectedRoute>
+              }
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
