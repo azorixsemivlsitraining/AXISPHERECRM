@@ -69,13 +69,23 @@ export default function InvoiceView() {
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
     try {
+      // Convert image URL to base64 for PDF embedding
+      const logoBase64 = await fetch(companyInfo.logo)
+        .then(res => res.blob())
+        .then(blob => new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        }))
+        .catch(() => companyInfo.logo); // Fallback to URL if fetch fails
+
       const element = document.createElement("div");
       element.innerHTML = `
         <div style="page-break-after: always; padding: 48px; min-height: 100vh; background: white;">
           <!-- Page 1: Bill -->
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 48px;">
             <div>
-              <img src="${companyInfo.logo}" alt="Axisphere" style="height: 48px; margin-bottom: 8px;" />
+              <img src="${logoBase64}" alt="Axisphere" style="height: 48px; margin-bottom: 8px;" />
               <h1 style="font-size: 36px; font-weight: bold; color: #9333ea; margin-bottom: 8px;">Axisphere</h1>
               <div style="font-size: 14px; color: #475569;">
                 ${companyInfo.address.split("\n").map(line => `<div>${line}</div>`).join("")}
@@ -155,7 +165,7 @@ export default function InvoiceView() {
           <!-- Page 2: Scope/Features -->
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 48px;">
             <div>
-              <img src="${companyInfo.logo}" alt="Axisphere" style="height: 48px; margin-bottom: 8px;" />
+              <img src="${logoBase64}" alt="Axisphere" style="height: 48px; margin-bottom: 8px;" />
               <h1 style="font-size: 36px; font-weight: bold; color: #9333ea; margin-bottom: 8px;">Axisphere</h1>
             </div>
             <div style="text-align: right;">
