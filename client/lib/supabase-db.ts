@@ -309,7 +309,10 @@ export async function updateSalesperson(
 }
 
 export async function deleteSalesperson(id: string) {
-  const { error } = await supabase.from("salespersons").delete().eq("id", id);
+  const { error } = await supabase
+    .from("salespersons")
+    .update({ is_deleted: true })
+    .eq("id", id);
 
   if (error) {
     console.error("Error deleting salesperson:", error);
