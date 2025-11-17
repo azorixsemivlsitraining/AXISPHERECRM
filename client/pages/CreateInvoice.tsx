@@ -89,10 +89,10 @@ export default function CreateInvoice() {
       return;
     }
 
-    if (!formData.companyName.trim()) {
+    if (formData.taxPercentage < 0) {
       toast({
         title: "Error",
-        description: "Company name is required",
+        description: "Tax percentage cannot be negative",
         variant: "destructive",
       });
       return;
