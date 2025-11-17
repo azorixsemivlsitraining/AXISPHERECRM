@@ -86,7 +86,7 @@ export default function InvoiceView() {
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 48px;">
             <div>
               <img src="${logoBase64}" alt="Axisphere" style="height: 48px; margin-bottom: 8px;" />
-              <h1 style="font-size: 36px; font-weight: bold; color: #9333ea; margin-bottom: 8px;">Axisphere</h1>
+              <h1 style="font-size: 36px; font-weight: bold; color: #9333ea; margin-bottom: 8px;">Axisphere Invoice Bill</h1>
               <div style="font-size: 14px; color: #475569;">
                 ${companyInfo.address.split("\n").map(line => `<div>${line}</div>`).join("")}
               </div>
@@ -166,7 +166,7 @@ export default function InvoiceView() {
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 48px;">
             <div>
               <img src="${logoBase64}" alt="Axisphere" style="height: 48px; margin-bottom: 8px;" />
-              <h1 style="font-size: 36px; font-weight: bold; color: #9333ea; margin-bottom: 8px;">Axisphere</h1>
+              <h1 style="font-size: 36px; font-weight: bold; color: #9333ea; margin-bottom: 8px;">Axisphere Invoice Bill</h1>
             </div>
             <div style="text-align: right;">
               <p style="font-size: 14px; font-weight: 600; color: #1e293b;">Invoice Number: ${invoice?.invoiceNumber}</p>
