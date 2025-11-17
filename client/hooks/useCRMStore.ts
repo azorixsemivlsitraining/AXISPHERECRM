@@ -47,6 +47,8 @@ export interface Salesperson {
   createdAt: string;
 }
 
+const DEFAULT_LEAD_STATUS: LeadStatus = "No Stage";
+
 export function useCRMStore() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [salespersons, setSalespersons] = useState<Salesperson[]>([]);
