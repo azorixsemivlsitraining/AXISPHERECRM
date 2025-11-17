@@ -130,10 +130,20 @@ export default function Salespersons() {
           <div>
             <h2 className="text-3xl font-bold text-slate-900">Sales Persons</h2>
             <p className="text-slate-600 mt-1">
-              Manage your sales team members
+              {user?.role === "admin"
+                ? "Manage your sales team members"
+                : "View and edit your details"}
             </p>
           </div>
-          
+          {user?.role === "admin" && (
+            <Button
+              onClick={() => setShowForm(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Sales Person
+            </Button>
+          )}
         </div>
 
         {/* Form */}
