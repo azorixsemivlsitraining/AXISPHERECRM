@@ -54,5 +54,10 @@ export function createServer() {
   // Apollo proxy
   app.post("/api/apollo", handleApolloProxy);
 
+  // SPA fallback - serve index.html for all non-API routes
+  app.get("*", (_req, res) => {
+    res.sendFile("index.html", { root: process.cwd() });
+  });
+
   return app;
 }
