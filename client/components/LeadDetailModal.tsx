@@ -9,14 +9,13 @@ import { useToast } from "@/hooks/use-toast";
 import { formatActivityLogDate, formatDateOnlyIST } from "@/lib/formatDateIST";
 
 const LEAD_STATUSES: LeadStatus[] = [
-  "Not lifted",
-  "Not connected",
-  "Voice Message",
-  "Quotation sent",
-  "Site visit",
-  "Advance payment",
-  "Lead finished",
-  "Contacted",
+  "No Stage",
+  "Appointment Schedule",
+  "Presentation Done",
+  "Proposal",
+  "Negotiation",
+  "Evaluation",
+  "Result",
 ];
 
 interface LeadNote {
