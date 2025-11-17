@@ -23,6 +23,7 @@ export function MainLayout({ children }: LayoutProps) {
   const baseNavItems = [
     { path: "/", label: "Dashboard", icon: BarChart3 },
     { path: "/leads", label: "Leads", icon: Users },
+    { path: "/leads-dashboard", label: "Leads Dashboard", icon: BarChart2 },
     { path: "/salespersons", label: "Sales Persons", icon: UserCheck },
     { path: "/companies", label: "Companies", icon: Building2 },
   ];
