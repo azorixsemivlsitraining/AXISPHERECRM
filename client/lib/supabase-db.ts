@@ -110,6 +110,8 @@ export async function addLead(lead: Omit<Lead, "id" | "createdAt">) {
     }
     if (lead.status) {
       insertData.status = lead.status;
+    } else {
+      insertData.status = "No Stage";
     }
     if (lead.note) {
       insertData.note = lead.note;
@@ -148,7 +150,7 @@ export async function addLead(lead: Omit<Lead, "id" | "createdAt">) {
       companyIndustries: data.company_industries || [],
       companyKeywords: data.company_keywords || [],
       assignedTo: data.assigned_to,
-      status: data.status || "Not lifted",
+      status: data.status || "No Stage",
       note: data.note,
       nextReminderDate: data.next_reminder_date,
       createdAt: data.created_at,
