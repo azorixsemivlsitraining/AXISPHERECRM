@@ -6,6 +6,7 @@ import {
   Building2,
   LogOut,
   Shield,
+  BarChart2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
