@@ -52,16 +52,15 @@ export function RemindersPanel() {
 
   const getStatusColor = (status?: string) => {
     const colors: Record<string, string> = {
-      "Not lifted": "bg-gray-100 text-gray-700",
-      "Not connected": "bg-red-100 text-red-700",
-      "Voice Message": "bg-blue-100 text-blue-700",
-      "Quotation sent": "bg-yellow-100 text-yellow-700",
-      "Site visit": "bg-purple-100 text-purple-700",
-      "Advance payment": "bg-orange-100 text-orange-700",
-      "Lead finished": "bg-green-100 text-green-700",
-      Contacted: "bg-cyan-100 text-cyan-700",
+      "No Stage": "bg-gray-100 text-gray-700",
+      "Appointment Schedule": "bg-blue-100 text-blue-700",
+      "Presentation Done": "bg-purple-100 text-purple-700",
+      Proposal: "bg-yellow-100 text-yellow-700",
+      Negotiation: "bg-orange-100 text-orange-700",
+      Evaluation: "bg-amber-100 text-amber-700",
+      Result: "bg-green-100 text-green-700",
     };
-    return colors[status || "Not lifted"] || "bg-slate-100 text-slate-700";
+    return colors[status || "No Stage"] || "bg-slate-100 text-slate-700";
   };
 
   const getDaysUntil = (date: string) => {
