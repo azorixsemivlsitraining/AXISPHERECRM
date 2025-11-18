@@ -176,9 +176,7 @@ export default function Login() {
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 disabled={isLoading}
               >
-                {isLoading && (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                )}
+                {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
 
