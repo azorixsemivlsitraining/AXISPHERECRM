@@ -138,13 +138,17 @@ export default function Admin() {
             }),
           });
 
-          if (!response.ok) {
-            const errorData = await response.json();
-            const errorMessage = errorData.error || "Failed to create account";
-            throw new Error(errorMessage);
+          let authData;
+          try {
+            authData = await response.json();
+          } catch (parseError) {
+            throw new Error(`Failed to parse response: ${String(parseError)}`);
           }
 
-          const authData = await response.json();
+          if (!response.ok) {
+            const errorMessage = authData.error || "Failed to create account";
+            throw new Error(errorMessage);
+          }
 
           if (!authData?.user) {
             throw new Error("No user returned from signup");
