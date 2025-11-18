@@ -105,13 +105,21 @@ export const handleAuthSignIn: RequestHandler = async (req, res) => {
 export const handleAuthSignUp: RequestHandler = async (req, res) => {
   try {
     if (!serverSupabase) {
-      return res.status(500).json({ error: "Server configuration error" });
+      return res
+        .status(500)
+        .setHeader("Content-Type", "application/json")
+        .end(JSON.stringify({ error: "Server configuration error" }));
     }
 
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ error: "Email and password required" });
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({ error: "Email and password required" }),
+        );
     }
 
     const { data, error } = await serverSupabase.auth.signUp({
@@ -121,19 +129,32 @@ export const handleAuthSignUp: RequestHandler = async (req, res) => {
 
     if (error) {
       console.error("Auth error:", error);
-      return res.status(400).json({ error: error.message });
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(JSON.stringify({ error: error.message }));
     }
 
     // Return auth data
-    res.json({
-      user: data.user,
-      session: data.session,
-    });
+    return res
+      .status(200)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          user: data.user,
+          session: data.session,
+        }),
+      );
   } catch (error) {
     console.error("Sign up error:", error);
-    res.status(500).json({
-      error: error instanceof Error ? error.message : "Sign up failed",
-    });
+    return res
+      .status(500)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          error: error instanceof Error ? error.message : "Sign up failed",
+        }),
+      );
   }
 };
 
