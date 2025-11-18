@@ -7,17 +7,27 @@ export const handleApolloProxy: RequestHandler = async (req, res) => {
     const APOLLO_API_KEY = process.env.VITE_APOLLO_API_KEY;
     if (!APOLLO_API_KEY) {
       console.error("Missing VITE_APOLLO_API_KEY environment variable");
-      return res.status(500).json({
-        error: "Apollo API key not configured",
-      });
+      return res
+        .status(500)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: "Apollo API key not configured",
+          }),
+        );
     }
 
     const { endpoint, method = "POST", body } = req.body;
 
     if (!endpoint) {
-      return res.status(400).json({
-        error: "Missing endpoint parameter",
-      });
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: "Missing endpoint parameter",
+          }),
+        );
     }
 
     console.log(
@@ -51,10 +61,15 @@ export const handleApolloProxy: RequestHandler = async (req, res) => {
       } catch {
         errorData = { message: responseText };
       }
-      return res.status(response.status).json({
-        error: `Apollo API error: ${response.status}`,
-        details: errorData,
-      });
+      return res
+        .status(response.status)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: `Apollo API error: ${response.status}`,
+            details: errorData,
+          }),
+        );
     }
 
     let data;
@@ -63,12 +78,20 @@ export const handleApolloProxy: RequestHandler = async (req, res) => {
     } catch {
       data = responseText;
     }
-    res.json(data);
+    return res
+      .status(200)
+      .setHeader("Content-Type", "application/json")
+      .end(JSON.stringify(data));
   } catch (error) {
     console.error("Apollo proxy error:", error);
-    res.status(500).json({
-      error: "Failed to call Apollo API",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
+    return res
+      .status(500)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          error: "Failed to call Apollo API",
+          message: error instanceof Error ? error.message : "Unknown error",
+        }),
+      );
   }
 };

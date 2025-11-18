@@ -32,19 +32,33 @@ const adminSupabase =
 export const handleUpdateLead: RequestHandler = async (req, res) => {
   try {
     if (!adminSupabase) {
-      return res.status(500).json({
-        error: "Server configuration error: service role key not configured",
-        details: "SUPABASE_SERVICE_ROLE_KEY is not set",
-      });
+      console.error("[Update Lead] adminSupabase not initialized");
+      return res
+        .status(500)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error:
+              "Server configuration error: service role key not configured",
+            details: "SUPABASE_SERVICE_ROLE_KEY is not set",
+          }),
+        );
     }
 
     const { leadId, updates } = req.body;
 
     if (!leadId || !updates) {
-      return res.status(400).json({
-        error: "Missing required fields: leadId and updates",
-      });
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: "Missing required fields: leadId and updates",
+          }),
+        );
     }
+
+    console.log("[Update Lead] Attempting to update lead:", leadId);
 
     // Map camelCase to snake_case for database
     const updateData: any = {};
@@ -79,41 +93,74 @@ export const handleUpdateLead: RequestHandler = async (req, res) => {
       .eq("id", leadId);
 
     if (error) {
-      console.error("Error updating lead:", error);
-      return res.status(400).json({
-        error: "Failed to update lead",
-        details: error.message,
-      });
+      console.error("[Update Lead] Error updating lead:", error);
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: "Failed to update lead",
+            details: error.message,
+          }),
+        );
     }
 
-    res.json({
-      success: true,
-      message: "Lead updated successfully",
-    });
+    console.log("[Update Lead] Successfully updated lead");
+    return res
+      .status(200)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          success: true,
+          message: "Lead updated successfully",
+        }),
+      );
   } catch (error) {
-    console.error("Lead update error:", error);
-    res.status(500).json({
-      error: error instanceof Error ? error.message : "Lead update failed",
-    });
+    console.error("[Update Lead] Unexpected error:", error);
+    return res
+      .status(500)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          error: error instanceof Error ? error.message : "Lead update failed",
+        }),
+      );
   }
 };
 
 export const handleDeleteSalesperson: RequestHandler = async (req, res) => {
   try {
     if (!adminSupabase) {
-      return res.status(500).json({
-        error: "Server configuration error: service role key not configured",
-        details: "SUPABASE_SERVICE_ROLE_KEY is not set",
-      });
+      console.error("[Delete Salesperson] adminSupabase not initialized");
+      return res
+        .status(500)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error:
+              "Server configuration error: service role key not configured",
+            details: "SUPABASE_SERVICE_ROLE_KEY is not set",
+          }),
+        );
     }
 
     const { salespersonId } = req.body;
 
     if (!salespersonId) {
-      return res.status(400).json({
-        error: "Missing required field: salespersonId",
-      });
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: "Missing required field: salespersonId",
+          }),
+        );
     }
+
+    console.log(
+      "[Delete Salesperson] Attempting to delete salesperson:",
+      salespersonId,
+    );
 
     // First, get the salesperson to retrieve auth_id
     const { data: salesperson, error: fetchError } = await adminSupabase
@@ -123,11 +170,19 @@ export const handleDeleteSalesperson: RequestHandler = async (req, res) => {
       .single();
 
     if (fetchError) {
-      console.error("Error fetching salesperson:", fetchError);
-      return res.status(400).json({
-        error: "Failed to fetch salesperson",
-        details: fetchError.message,
-      });
+      console.error(
+        "[Delete Salesperson] Error fetching salesperson:",
+        fetchError,
+      );
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: "Failed to fetch salesperson",
+            details: fetchError.message,
+          }),
+        );
     }
 
     // Delete all leads assigned to this salesperson
@@ -137,11 +192,16 @@ export const handleDeleteSalesperson: RequestHandler = async (req, res) => {
       .eq("assigned_to", salespersonId);
 
     if (leadsError) {
-      console.error("Error deleting leads for salesperson:", leadsError);
-      return res.status(400).json({
-        error: "Failed to delete leads for salesperson",
-        details: leadsError.message,
-      });
+      console.error("[Delete Salesperson] Error deleting leads:", leadsError);
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: "Failed to delete leads for salesperson",
+            details: leadsError.message,
+          }),
+        );
     }
 
     // Delete the salesperson record
@@ -151,11 +211,19 @@ export const handleDeleteSalesperson: RequestHandler = async (req, res) => {
       .eq("id", salespersonId);
 
     if (spError) {
-      console.error("Error deleting salesperson:", spError);
-      return res.status(400).json({
-        error: "Failed to delete salesperson",
-        details: spError.message,
-      });
+      console.error(
+        "[Delete Salesperson] Error deleting salesperson:",
+        spError,
+      );
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: "Failed to delete salesperson",
+            details: spError.message,
+          }),
+        );
     }
 
     // Delete the auth user if auth_id exists
@@ -165,19 +233,33 @@ export const handleDeleteSalesperson: RequestHandler = async (req, res) => {
       );
 
       if (authError) {
-        console.error("Warning: Failed to delete auth user:", authError);
+        console.error(
+          "[Delete Salesperson] Warning: Failed to delete auth user:",
+          authError,
+        );
         // Don't fail the entire operation if auth deletion fails
       }
     }
 
-    res.json({
-      success: true,
-      message: "Salesperson deleted successfully",
-    });
+    console.log("[Delete Salesperson] Successfully deleted salesperson");
+    return res
+      .status(200)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          success: true,
+          message: "Salesperson deleted successfully",
+        }),
+      );
   } catch (error) {
-    console.error("Salesperson delete error:", error);
-    res.status(500).json({
-      error: error instanceof Error ? error.message : "Delete failed",
-    });
+    console.error("[Delete Salesperson] Unexpected error:", error);
+    return res
+      .status(500)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          error: error instanceof Error ? error.message : "Delete failed",
+        }),
+      );
   }
 };

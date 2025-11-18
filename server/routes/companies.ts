@@ -37,10 +37,15 @@ export const handleGetCompanies: RequestHandler = async (req, res) => {
 
     if (error) {
       console.error("[Companies] Supabase error:", error);
-      return res.status(500).json({
-        error: "Failed to fetch saved companies from Supabase",
-        details: error.message,
-      });
+      return res
+        .status(500)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: "Failed to fetch saved companies from Supabase",
+            details: error.message,
+          }),
+        );
     }
 
     const companies = (data || []).map((item: any) => ({
@@ -69,18 +74,25 @@ export const handleGetCompanies: RequestHandler = async (req, res) => {
     const total = count || 0;
     const hasMore = offset + limit < total;
 
-    res.json({
-      companies,
-      total,
-      page,
-      limit,
-      hasMore,
-    });
+    return res.status(200).setHeader("Content-Type", "application/json").end(
+      JSON.stringify({
+        companies,
+        total,
+        page,
+        limit,
+        hasMore,
+      }),
+    );
   } catch (error) {
     console.error("[Companies] Unexpected error:", error);
-    res.status(500).json({
-      error: "Failed to fetch companies",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
+    return res
+      .status(500)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          error: "Failed to fetch companies",
+          message: error instanceof Error ? error.message : "Unknown error",
+        }),
+      );
   }
 };
