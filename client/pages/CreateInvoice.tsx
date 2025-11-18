@@ -131,7 +131,7 @@ export default function CreateInvoice() {
         companyName: formData.companyName || "",
         packageId: selectedPackage.id,
         packageName: selectedPackage.name,
-        packagePrice: selectedPackage.price,
+        packagePrice: formData.packagePrice,
         scope,
         paidAmount: formData.paidAmount,
         additionalNotes: formData.additionalNotes,
