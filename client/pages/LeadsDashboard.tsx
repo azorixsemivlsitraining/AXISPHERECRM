@@ -127,9 +127,7 @@ export default function LeadsDashboard() {
     <MainLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">
-            Leads Dashboard
-          </h1>
+          <h1 className="text-3xl font-bold text-slate-900">Leads Dashboard</h1>
           <p className="text-slate-600 mt-1">
             Kanban view - Drag and drop leads to change their status
           </p>
@@ -177,7 +175,8 @@ export default function LeadsDashboard() {
                       </div>
                     ) : (
                       statusLeads.map((lead) => {
-                        const status = (lead.status || "No Stage") as LeadStatus;
+                        const status = (lead.status ||
+                          "No Stage") as LeadStatus;
                         return (
                           <button
                             key={lead.id}
@@ -199,7 +198,9 @@ export default function LeadsDashboard() {
                               <div className="space-y-1 text-xs">
                                 {lead.company && (
                                   <div className="text-slate-600">
-                                    <span className="font-medium">Company:</span>{" "}
+                                    <span className="font-medium">
+                                      Company:
+                                    </span>{" "}
                                     <span className="text-slate-900 line-clamp-1">
                                       {lead.company}
                                     </span>
@@ -207,7 +208,9 @@ export default function LeadsDashboard() {
                                 )}
                                 {lead.assignedTo && (
                                   <div className="text-slate-600">
-                                    <span className="font-medium">Assigned:</span>{" "}
+                                    <span className="font-medium">
+                                      Assigned:
+                                    </span>{" "}
                                     <span className="text-slate-900">
                                       {getSalespersonName(lead.assignedTo)}
                                     </span>
