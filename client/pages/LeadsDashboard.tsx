@@ -131,247 +131,111 @@ export default function LeadsDashboard() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">
-              Leads Dashboard
-            </h1>
-            <p className="text-slate-600 mt-1">
-              {selectedStatus
-                ? `Leads in ${selectedStatus}`
-                : "View all leads grouped by status"}
-            </p>
-          </div>
-          {selectedStatus && (
-            <button
-              onClick={() => setSelectedStatus(null)}
-              className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-900 rounded-lg font-medium transition-colors flex items-center gap-2"
-            >
-              <X className="w-4 h-4" />
-              Clear Filter
-            </button>
-          )}
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">
+            Leads Dashboard
+          </h1>
+          <p className="text-slate-600 mt-1">
+            Kanban view - Drag and drop leads to change their status
+          </p>
         </div>
 
-        {/* Status Cards Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
-          {LEAD_STATUSES.map((status) => {
-            const count = leadsGroupedByStatus[status].length;
-            const isSelected = selectedStatus === status;
-
-            return (
-              <button
-                key={status}
-                onClick={() => setSelectedStatus(isSelected ? null : status)}
-                className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${
-                  isSelected
-                    ? `border-blue-500 bg-blue-50 shadow-md`
-                    : `${STATUS_BG_COLORS[status]} border-2`
-                }`}
-              >
-                <p className="text-xs text-slate-600 font-medium mb-1 truncate">
-                  {status}
-                </p>
-                <p className="text-2xl font-bold text-slate-900">{count}</p>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Leads Display */}
-        {selectedStatus ? (
-          // Filtered view for selected status
-          <div
-            className={`bg-white rounded-lg border-2 p-6 transition-all ${
-              dragOverStatus === selectedStatus
-                ? "border-blue-400 bg-blue-50 shadow-md"
-                : "border-slate-200"
-            }`}
-            onDragOver={(e) => handleDragOver(e, selectedStatus)}
-            onDragLeave={handleDragLeave}
-            onDrop={(e) => handleDrop(e, selectedStatus)}
-          >
-            <div className="mb-4 flex items-center gap-3">
-              <h2 className="text-2xl font-semibold text-slate-900">
-                {selectedStatus}
-              </h2>
-              <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm font-medium">
-                {displayLeads.length}
-              </span>
-            </div>
-
-            {displayLeads.length === 0 ? (
-              <div className="py-12 text-center">
-                <p className="text-slate-500">No leads in this status</p>
-              </div>
-            ) : (
-              <div className="grid gap-3">
-                {displayLeads.map((lead) => {
-                  const status = (lead.status || "No Stage") as LeadStatus;
-                  return (
-                    <button
-                      key={lead.id}
-                      onClick={() => setSelectedLead(lead)}
-                      draggable
-                      onDragStart={() => handleDragStart(lead)}
-                      onDragEnd={handleDragEnd}
-                      className={`text-left flex items-start justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all cursor-grab active:cursor-grabbing ${
-                        draggingLead?.id === lead.id
-                          ? "opacity-50"
-                          : "opacity-100"
-                      }`}
-                    >
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-base font-semibold text-slate-900 truncate">
-                            {lead.name}
-                          </h3>
-                          <span
-                            className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${STATUS_COLORS[status]}`}
-                          >
-                            {status}
-                          </span>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3 text-sm mb-2">
-                          <div>
-                            <p className="text-slate-600 font-medium">
-                              Company
-                            </p>
-                            <p className="text-slate-900">
-                              {lead.company || "N/A"}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-slate-600 font-medium">
-                              Position
-                            </p>
-                            <p className="text-slate-900">
-                              {lead.jobTitle || "N/A"}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div>
-                            <p className="text-slate-600 font-medium">Email</p>
-                            <p className="text-slate-900">
-                              {lead.email || "N/A"}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-slate-600 font-medium">
-                              Assigned To
-                            </p>
-                            <p className="text-slate-900">
-                              {getSalespersonName(lead.assignedTo)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        ) : (
-          // Overview with all statuses
-          <div className="space-y-6">
+        {/* Kanban Board */}
+        <div className="overflow-x-auto pb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 min-w-max md:min-w-full">
             {LEAD_STATUSES.map((status) => {
               const statusLeads = leadsGroupedByStatus[status];
               const count = statusLeads.length;
 
-              if (count === 0) return null;
-
               return (
                 <div
                   key={status}
-                  className={`bg-white rounded-lg border-2 p-6 transition-all min-h-48 ${
+                  className={`flex flex-col bg-white rounded-lg border-2 transition-all min-h-96 flex-shrink-0 md:flex-shrink w-full md:w-auto ${
                     dragOverStatus === status
                       ? "border-blue-400 bg-blue-50 shadow-lg"
                       : "border-slate-200"
-                  } ${count === 0 ? "opacity-60" : ""}`}
+                  }`}
                   onDragOver={(e) => handleDragOver(e, status)}
                   onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, status)}
                 >
-                  <div className="mb-4 flex items-center gap-3">
-                    <h2 className="text-xl font-semibold text-slate-900">
-                      {status}
-                    </h2>
-                    <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm font-medium">
-                      {count}
-                    </span>
+                  {/* Column Header */}
+                  <div className="p-4 border-b border-slate-200 bg-slate-50 rounded-t-lg sticky top-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="text-sm font-semibold text-slate-900">
+                        {status}
+                      </h3>
+                      <span className="px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700 text-xs font-medium">
+                        {count}
+                      </span>
+                    </div>
                   </div>
 
-                  {count === 0 ? (
-                    <div className="py-8 text-center text-slate-400">
-                      <p>No leads - drag to move leads here</p>
-                    </div>
-                  ) : (
-                    <div className="grid gap-3">
-                      {statusLeads.slice(0, 3).map((lead) => (
-                        <button
-                          key={lead.id}
-                          onClick={() => setSelectedLead(lead)}
-                          draggable
-                          onDragStart={() => handleDragStart(lead)}
-                          onDragEnd={handleDragEnd}
-                          className={`text-left flex items-start justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all cursor-grab active:cursor-grabbing ${
-                            draggingLead?.id === lead.id
-                              ? "opacity-50 ring-2 ring-blue-400"
-                              : "opacity-100"
-                          }`}
-                        >
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="text-base font-semibold text-slate-900 truncate">
+                  {/* Leads Container */}
+                  <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                    {count === 0 ? (
+                      <div className="py-8 text-center">
+                        <p className="text-sm text-slate-400">No leads</p>
+                        <p className="text-xs text-slate-400 mt-1">
+                          Drag to add
+                        </p>
+                      </div>
+                    ) : (
+                      statusLeads.map((lead) => {
+                        const status = (lead.status || "No Stage") as LeadStatus;
+                        return (
+                          <button
+                            key={lead.id}
+                            onClick={() => setSelectedLead(lead)}
+                            draggable
+                            onDragStart={() => handleDragStart(lead)}
+                            onDragEnd={handleDragEnd}
+                            className={`w-full text-left p-3 bg-white rounded-lg border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all cursor-grab active:cursor-grabbing ${
+                              draggingLead?.id === lead.id
+                                ? "opacity-50 ring-2 ring-blue-400"
+                                : "opacity-100"
+                            }`}
+                          >
+                            <div className="space-y-2">
+                              <h4 className="text-sm font-semibold text-slate-900 line-clamp-2">
                                 {lead.name}
-                              </h3>
-                              <span
-                                className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${STATUS_COLORS[status]}`}
-                              >
-                                {status}
-                              </span>
-                            </div>
+                              </h4>
 
-                            <div className="grid grid-cols-2 gap-3 text-sm">
-                              <div>
-                                <p className="text-slate-600 font-medium">
-                                  Company
-                                </p>
-                                <p className="text-slate-900">
-                                  {lead.company || "N/A"}
-                                </p>
+                              <div className="space-y-1 text-xs">
+                                {lead.company && (
+                                  <div className="text-slate-600">
+                                    <span className="font-medium">Company:</span>{" "}
+                                    <span className="text-slate-900 line-clamp-1">
+                                      {lead.company}
+                                    </span>
+                                  </div>
+                                )}
+                                {lead.assignedTo && (
+                                  <div className="text-slate-600">
+                                    <span className="font-medium">Assigned:</span>{" "}
+                                    <span className="text-slate-900">
+                                      {getSalespersonName(lead.assignedTo)}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
-                              <div>
-                                <p className="text-slate-600 font-medium">
-                                  Assigned To
-                                </p>
-                                <p className="text-slate-900">
-                                  {getSalespersonName(lead.assignedTo)}
-                                </p>
-                              </div>
+
+                              {lead.createdAt && (
+                                <div className="text-xs text-slate-500">
+                                  {formatDateOnlyIST(lead.createdAt)}
+                                </div>
+                              )}
                             </div>
-                          </div>
-                        </button>
-                      ))}
-                      {count > 3 && (
-                        <button
-                          onClick={() => setSelectedStatus(status)}
-                          className="py-2 px-4 text-center text-blue-600 hover:text-blue-700 font-medium text-sm"
-                        >
-                          View all {count} leads →
-                        </button>
-                      )}
-                    </div>
-                  )}
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
                 </div>
               );
             })}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Lead Detail Modal */}
