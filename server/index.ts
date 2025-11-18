@@ -37,6 +37,7 @@ export function createServer() {
   app.post("/api/auth/sign-up", handleAuthSignUp);
   app.post("/api/auth/sign-out", handleAuthSignOut);
   app.get("/api/auth/session", handleAuthSession);
+  app.post("/api/auth/password-reset", handlePasswordReset);
 
   // Debug endpoint to check API key
   app.get("/api/debug-key", (_req, res) => {
