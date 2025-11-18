@@ -24,7 +24,16 @@ const adminSupabase =
 export const handleAuthSignIn: RequestHandler = async (req, res) => {
   try {
     if (!serverSupabase) {
-      return res.status(500).json({ error: "Server configuration error" });
+      console.error(
+        "[Auth SignIn] Missing Supabase client - VITE_SUPABASE_URL:",
+        !!process.env.VITE_SUPABASE_URL,
+        "VITE_SUPABASE_ANON_KEY:",
+        !!process.env.VITE_SUPABASE_ANON_KEY,
+      );
+      return res.status(500).json({
+        error: "Server configuration error",
+        details: "Supabase client not initialized",
+      });
     }
 
     const { email, password } = req.body;
@@ -33,25 +42,36 @@ export const handleAuthSignIn: RequestHandler = async (req, res) => {
       return res.status(400).json({ error: "Email and password required" });
     }
 
+    console.log("[Auth SignIn] Attempting login for:", email);
+
     const { data, error } = await serverSupabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
-      console.error("Auth error:", error);
+      console.error("[Auth SignIn] Authentication failed:", error.message);
       return res.status(401).json({ error: error.message });
     }
 
+    if (!data.user) {
+      console.error("[Auth SignIn] No user data returned");
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
     // Return auth data and session
+    console.log("[Auth SignIn] Login successful for:", data.user.email);
     res.json({
       user: data.user,
       session: data.session,
     });
   } catch (error) {
-    console.error("Sign in error:", error);
+    console.error("[Auth SignIn] Unexpected error:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Sign in failed";
     res.status(500).json({
-      error: error instanceof Error ? error.message : "Sign in failed",
+      error: errorMessage,
+      details: "An unexpected error occurred during sign in",
     });
   }
 };
