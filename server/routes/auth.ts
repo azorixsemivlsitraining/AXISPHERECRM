@@ -217,12 +217,18 @@ export const handleAuthSignOut: RequestHandler = async (req, res) => {
 export const handleAuthSession: RequestHandler = async (req, res) => {
   try {
     if (!serverSupabase) {
-      return res.status(500).json({ error: "Server configuration error" });
+      return res
+        .status(500)
+        .setHeader("Content-Type", "application/json")
+        .end(JSON.stringify({ error: "Server configuration error" }));
     }
 
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      return res.json({ session: null });
+      return res
+        .status(200)
+        .setHeader("Content-Type", "application/json")
+        .end(JSON.stringify({ session: null }));
     }
 
     const {
@@ -231,15 +237,26 @@ export const handleAuthSession: RequestHandler = async (req, res) => {
     } = await serverSupabase.auth.getUser(token);
 
     if (error || !user) {
-      return res.json({ session: null });
+      return res
+        .status(200)
+        .setHeader("Content-Type", "application/json")
+        .end(JSON.stringify({ session: null }));
     }
 
-    res.json({ user });
+    return res
+      .status(200)
+      .setHeader("Content-Type", "application/json")
+      .end(JSON.stringify({ user }));
   } catch (error) {
     console.error("Session check error:", error);
-    res.status(500).json({
-      error: error instanceof Error ? error.message : "Session check failed",
-    });
+    return res
+      .status(500)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          error: error instanceof Error ? error.message : "Session check failed",
+        }),
+      );
   }
 };
 
