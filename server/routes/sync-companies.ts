@@ -15,14 +15,9 @@ export const handleSyncCompanies: RequestHandler = async (req, res) => {
     const { companies } = req.body;
 
     if (!companies || !Array.isArray(companies)) {
-      return res
-        .status(400)
-        .setHeader("Content-Type", "application/json")
-        .end(
-          JSON.stringify({
-            error: "Invalid request body. Expected array of companies.",
-          }),
-        );
+      return res.status(400).json({
+        error: "Invalid request body. Expected array of companies.",
+      });
     }
 
     console.log(
@@ -44,39 +39,24 @@ export const handleSyncCompanies: RequestHandler = async (req, res) => {
 
     if (error) {
       console.error("[Sync] Error syncing companies:", error);
-      return res
-        .status(500)
-        .setHeader("Content-Type", "application/json")
-        .end(
-          JSON.stringify({
-            error: "Failed to sync companies",
-            details: error.message,
-          }),
-        );
+      return res.status(500).json({
+        error: "Failed to sync companies",
+        details: error.message,
+      });
     }
 
     console.log(`[Sync] Successfully synced ${data?.length || 0} companies`);
 
-    return res
-      .status(200)
-      .setHeader("Content-Type", "application/json")
-      .end(
-        JSON.stringify({
-          success: true,
-          synced: data?.length || 0,
-          message: `Synced ${data?.length || 0} companies to Supabase`,
-        }),
-      );
+    return res.status(200).json({
+      success: true,
+      synced: data?.length || 0,
+      message: `Synced ${data?.length || 0} companies to Supabase`,
+    });
   } catch (error) {
     console.error("[Sync] Unexpected error:", error);
-    return res
-      .status(500)
-      .setHeader("Content-Type", "application/json")
-      .end(
-        JSON.stringify({
-          error: "Failed to sync companies",
-          message: error instanceof Error ? error.message : "Unknown error",
-        }),
-      );
+    return res.status(500).json({
+      error: "Failed to sync companies",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
