@@ -7,6 +7,10 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 // Debug: log if keys are loaded
 console.log("[Leads Route] Supabase URL loaded:", !!supabaseUrl);
 console.log("[Leads Route] Service Role Key loaded:", !!supabaseServiceKey);
+if (!supabaseServiceKey) {
+  console.error("[Leads Route] CRITICAL: SUPABASE_SERVICE_ROLE_KEY is not set in environment");
+  console.log("[Leads Route] Available env keys:", Object.keys(process.env).filter(k => k.includes('SUPABASE')).sort());
+}
 
 if (!supabaseUrl) {
   console.error("Missing VITE_SUPABASE_URL on server");
