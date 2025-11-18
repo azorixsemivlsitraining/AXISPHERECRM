@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error("Missing Supabase environment variables on server");
@@ -12,6 +13,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
 const serverSupabase =
   supabaseUrl && supabaseAnonKey
     ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
+
+// Create admin Supabase client for deleting users
+const adminSupabase =
+  supabaseUrl && supabaseServiceKey
+    ? createClient(supabaseUrl, supabaseServiceKey)
     : null;
 
 export const handleAuthSignIn: RequestHandler = async (req, res) => {
