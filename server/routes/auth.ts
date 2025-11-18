@@ -30,16 +30,26 @@ export const handleAuthSignIn: RequestHandler = async (req, res) => {
         "VITE_SUPABASE_ANON_KEY:",
         !!process.env.VITE_SUPABASE_ANON_KEY,
       );
-      return res.status(500).json({
-        error: "Server configuration error",
-        details: "Supabase client not initialized",
-      });
+      return res
+        .status(500)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: "Server configuration error",
+            details: "Supabase client not initialized",
+          }),
+        );
     }
 
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ error: "Email and password required" });
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({ error: "Email and password required" }),
+        );
     }
 
     console.log("[Auth SignIn] Attempting login for:", email);
@@ -51,28 +61,44 @@ export const handleAuthSignIn: RequestHandler = async (req, res) => {
 
     if (error) {
       console.error("[Auth SignIn] Authentication failed:", error.message);
-      return res.status(401).json({ error: error.message });
+      return res
+        .status(401)
+        .setHeader("Content-Type", "application/json")
+        .end(JSON.stringify({ error: error.message }));
     }
 
     if (!data.user) {
       console.error("[Auth SignIn] No user data returned");
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res
+        .status(401)
+        .setHeader("Content-Type", "application/json")
+        .end(JSON.stringify({ error: "Invalid credentials" }));
     }
 
     // Return auth data and session
     console.log("[Auth SignIn] Login successful for:", data.user.email);
-    res.json({
-      user: data.user,
-      session: data.session,
-    });
+    return res
+      .status(200)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          user: data.user,
+          session: data.session,
+        }),
+      );
   } catch (error) {
     console.error("[Auth SignIn] Unexpected error:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Sign in failed";
-    res.status(500).json({
-      error: errorMessage,
-      details: "An unexpected error occurred during sign in",
-    });
+    return res
+      .status(500)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          error: errorMessage,
+          details: "An unexpected error occurred during sign in",
+        }),
+      );
   }
 };
 
