@@ -24,6 +24,7 @@ export default function CreateInvoice() {
     email: "",
     phoneNumber: "",
     companyName: "",
+    packagePrice: selectedPackage?.price || 0,
     paidAmount: selectedPackage?.price || 0,
     additionalNotes: "",
     taxPercentage: 0,
