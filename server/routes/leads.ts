@@ -38,7 +38,8 @@ export const handleUpdateLead: RequestHandler = async (req, res) => {
         .setHeader("Content-Type", "application/json")
         .end(
           JSON.stringify({
-            error: "Server configuration error: service role key not configured",
+            error:
+              "Server configuration error: service role key not configured",
             details: "SUPABASE_SERVICE_ROLE_KEY is not set",
           }),
         );
@@ -136,7 +137,8 @@ export const handleDeleteSalesperson: RequestHandler = async (req, res) => {
         .setHeader("Content-Type", "application/json")
         .end(
           JSON.stringify({
-            error: "Server configuration error: service role key not configured",
+            error:
+              "Server configuration error: service role key not configured",
             details: "SUPABASE_SERVICE_ROLE_KEY is not set",
           }),
         );
@@ -168,7 +170,10 @@ export const handleDeleteSalesperson: RequestHandler = async (req, res) => {
       .single();
 
     if (fetchError) {
-      console.error("[Delete Salesperson] Error fetching salesperson:", fetchError);
+      console.error(
+        "[Delete Salesperson] Error fetching salesperson:",
+        fetchError,
+      );
       return res
         .status(400)
         .setHeader("Content-Type", "application/json")
@@ -206,7 +211,10 @@ export const handleDeleteSalesperson: RequestHandler = async (req, res) => {
       .eq("id", salespersonId);
 
     if (spError) {
-      console.error("[Delete Salesperson] Error deleting salesperson:", spError);
+      console.error(
+        "[Delete Salesperson] Error deleting salesperson:",
+        spError,
+      );
       return res
         .status(400)
         .setHeader("Content-Type", "application/json")
@@ -250,8 +258,7 @@ export const handleDeleteSalesperson: RequestHandler = async (req, res) => {
       .setHeader("Content-Type", "application/json")
       .end(
         JSON.stringify({
-          error:
-            error instanceof Error ? error.message : "Delete failed",
+          error: error instanceof Error ? error.message : "Delete failed",
         }),
       );
   }

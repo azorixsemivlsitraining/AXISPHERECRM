@@ -74,18 +74,15 @@ export const handleGetCompanies: RequestHandler = async (req, res) => {
     const total = count || 0;
     const hasMore = offset + limit < total;
 
-    return res
-      .status(200)
-      .setHeader("Content-Type", "application/json")
-      .end(
-        JSON.stringify({
-          companies,
-          total,
-          page,
-          limit,
-          hasMore,
-        }),
-      );
+    return res.status(200).setHeader("Content-Type", "application/json").end(
+      JSON.stringify({
+        companies,
+        total,
+        page,
+        limit,
+        hasMore,
+      }),
+    );
   } catch (error) {
     console.error("[Companies] Unexpected error:", error);
     return res
