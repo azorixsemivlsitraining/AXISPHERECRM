@@ -86,3 +86,60 @@ export const handleUpdateLead: RequestHandler = async (req, res) => {
     });
   }
 };
+
+export const handleDeleteSalesperson: RequestHandler = async (req, res) => {
+  try {
+    if (!adminSupabase) {
+      return res.status(500).json({
+        error: "Server configuration error: service role key not configured",
+        details: "SUPABASE_SERVICE_ROLE_KEY is not set",
+      });
+    }
+
+    const { salespersonId } = req.body;
+
+    if (!salespersonId) {
+      return res.status(400).json({
+        error: "Missing required field: salespersonId",
+      });
+    }
+
+    // First, delete all leads assigned to this salesperson
+    const { error: leadsError } = await adminSupabase
+      .from("leads")
+      .delete()
+      .eq("assigned_to", salespersonId);
+
+    if (leadsError) {
+      console.error("Error deleting leads for salesperson:", leadsError);
+      return res.status(400).json({
+        error: "Failed to delete leads for salesperson",
+        details: leadsError.message,
+      });
+    }
+
+    // Then delete the salesperson
+    const { error: spError } = await adminSupabase
+      .from("salespersons")
+      .delete()
+      .eq("id", salespersonId);
+
+    if (spError) {
+      console.error("Error deleting salesperson:", spError);
+      return res.status(400).json({
+        error: "Failed to delete salesperson",
+        details: spError.message,
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Salesperson deleted successfully",
+    });
+  } catch (error) {
+    console.error("Salesperson delete error:", error);
+    res.status(500).json({
+      error: error instanceof Error ? error.message : "Delete failed",
+    });
+  }
+};
