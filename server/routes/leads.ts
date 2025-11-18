@@ -32,19 +32,32 @@ const adminSupabase =
 export const handleUpdateLead: RequestHandler = async (req, res) => {
   try {
     if (!adminSupabase) {
-      return res.status(500).json({
-        error: "Server configuration error: service role key not configured",
-        details: "SUPABASE_SERVICE_ROLE_KEY is not set",
-      });
+      console.error("[Update Lead] adminSupabase not initialized");
+      return res
+        .status(500)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: "Server configuration error: service role key not configured",
+            details: "SUPABASE_SERVICE_ROLE_KEY is not set",
+          }),
+        );
     }
 
     const { leadId, updates } = req.body;
 
     if (!leadId || !updates) {
-      return res.status(400).json({
-        error: "Missing required fields: leadId and updates",
-      });
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: "Missing required fields: leadId and updates",
+          }),
+        );
     }
+
+    console.log("[Update Lead] Attempting to update lead:", leadId);
 
     // Map camelCase to snake_case for database
     const updateData: any = {};
@@ -79,22 +92,38 @@ export const handleUpdateLead: RequestHandler = async (req, res) => {
       .eq("id", leadId);
 
     if (error) {
-      console.error("Error updating lead:", error);
-      return res.status(400).json({
-        error: "Failed to update lead",
-        details: error.message,
-      });
+      console.error("[Update Lead] Error updating lead:", error);
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(
+          JSON.stringify({
+            error: "Failed to update lead",
+            details: error.message,
+          }),
+        );
     }
 
-    res.json({
-      success: true,
-      message: "Lead updated successfully",
-    });
+    console.log("[Update Lead] Successfully updated lead");
+    return res
+      .status(200)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          success: true,
+          message: "Lead updated successfully",
+        }),
+      );
   } catch (error) {
-    console.error("Lead update error:", error);
-    res.status(500).json({
-      error: error instanceof Error ? error.message : "Lead update failed",
-    });
+    console.error("[Update Lead] Unexpected error:", error);
+    return res
+      .status(500)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          error: error instanceof Error ? error.message : "Lead update failed",
+        }),
+      );
   }
 };
 
