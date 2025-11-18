@@ -161,12 +161,18 @@ export const handleAuthSignUp: RequestHandler = async (req, res) => {
 export const handleAuthSignOut: RequestHandler = async (req, res) => {
   try {
     if (!serverSupabase) {
-      return res.status(500).json({ error: "Server configuration error" });
+      return res
+        .status(500)
+        .setHeader("Content-Type", "application/json")
+        .end(JSON.stringify({ error: "Server configuration error" }));
     }
 
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      return res.status(400).json({ error: "No authorization token" });
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(JSON.stringify({ error: "No authorization token" }));
     }
 
     // Verify and sign out user
@@ -176,21 +182,35 @@ export const handleAuthSignOut: RequestHandler = async (req, res) => {
     } = await serverSupabase.auth.getUser(token);
 
     if (userError || !user) {
-      return res.status(401).json({ error: "Invalid token" });
+      return res
+        .status(401)
+        .setHeader("Content-Type", "application/json")
+        .end(JSON.stringify({ error: "Invalid token" }));
     }
 
     const { error } = await serverSupabase.auth.signOut();
 
     if (error) {
-      return res.status(400).json({ error: error.message });
+      return res
+        .status(400)
+        .setHeader("Content-Type", "application/json")
+        .end(JSON.stringify({ error: error.message }));
     }
 
-    res.json({ success: true });
+    return res
+      .status(200)
+      .setHeader("Content-Type", "application/json")
+      .end(JSON.stringify({ success: true }));
   } catch (error) {
     console.error("Sign out error:", error);
-    res.status(500).json({
-      error: error instanceof Error ? error.message : "Sign out failed",
-    });
+    return res
+      .status(500)
+      .setHeader("Content-Type", "application/json")
+      .end(
+        JSON.stringify({
+          error: error instanceof Error ? error.message : "Sign out failed",
+        }),
+      );
   }
 };
 
