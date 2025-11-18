@@ -148,3 +148,36 @@ export const handleAuthSession: RequestHandler = async (req, res) => {
     });
   }
 };
+
+export const handlePasswordReset: RequestHandler = async (req, res) => {
+  try {
+    if (!serverSupabase) {
+      return res.status(500).json({ error: "Server configuration error" });
+    }
+
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const { error } = await serverSupabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${req.headers.origin || "http://localhost:8080"}/reset-password`,
+    });
+
+    if (error) {
+      console.error("Password reset error:", error);
+      return res.status(400).json({ error: error.message });
+    }
+
+    res.json({
+      success: true,
+      message: "Password reset email sent. Please check your email.",
+    });
+  } catch (error) {
+    console.error("Password reset request error:", error);
+    res.status(500).json({
+      error: error instanceof Error ? error.message : "Password reset failed",
+    });
+  }
+};
