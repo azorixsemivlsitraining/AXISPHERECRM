@@ -32,9 +32,9 @@ function expressPlugin(): Plugin {
     configureServer(server) {
       const app = createServer();
 
-      // Return middleware function for Vite dev server
+      // Add Express app as pre-middleware to Vite dev server
+      // This ensures API routes are handled before Vite's SPA fallback
       return () => {
-        // Add Express app as middleware to Vite dev server
         server.middlewares.use(app);
       };
     },
