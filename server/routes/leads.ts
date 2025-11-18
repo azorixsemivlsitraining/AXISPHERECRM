@@ -133,7 +133,10 @@ export const handleDeleteSalesperson: RequestHandler = async (req, res) => {
       .single();
 
     if (fetchError) {
-      console.error("[Delete Salesperson] Error fetching salesperson:", fetchError);
+      console.error(
+        "[Delete Salesperson] Error fetching salesperson:",
+        fetchError,
+      );
       return res.status(400).json({
         error: "Failed to fetch salesperson",
         details: fetchError.message,
@@ -161,7 +164,10 @@ export const handleDeleteSalesperson: RequestHandler = async (req, res) => {
       .eq("id", salespersonId);
 
     if (spError) {
-      console.error("[Delete Salesperson] Error deleting salesperson:", spError);
+      console.error(
+        "[Delete Salesperson] Error deleting salesperson:",
+        spError,
+      );
       return res.status(400).json({
         error: "Failed to delete salesperson",
         details: spError.message,
