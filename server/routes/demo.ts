@@ -5,8 +5,5 @@ export const handleDemo: RequestHandler = (req, res) => {
   const response: DemoResponse = {
     message: "Hello from Express server",
   };
-  res
-    .status(200)
-    .setHeader("Content-Type", "application/json")
-    .end(JSON.stringify(response));
+  return res.status(200).json(response);
 };
