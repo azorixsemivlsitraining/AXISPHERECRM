@@ -48,7 +48,6 @@ export default function Salespersons() {
           title: "Success",
           description: "Sales person updated successfully",
         });
-        setEditingId(null);
       } else {
         await addSalesperson(formData);
         toast({
@@ -57,12 +56,7 @@ export default function Salespersons() {
         });
       }
 
-      setFormData({
-        name: "",
-        email: "",
-        phoneNumber: "",
-      });
-      setShowForm(false);
+      closeForm();
     } catch (error) {
       toast({
         title: "Error",
