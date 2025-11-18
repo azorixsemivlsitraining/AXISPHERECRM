@@ -94,16 +94,6 @@ export default function Salespersons() {
     }
   };
 
-  const handleCancel = () => {
-    setFormData({
-      name: "",
-      email: "",
-      phoneNumber: "",
-    });
-    setEditingId(null);
-    setShowForm(false);
-  };
-
   const closeForm = () => {
     setFormData({
       name: "",
