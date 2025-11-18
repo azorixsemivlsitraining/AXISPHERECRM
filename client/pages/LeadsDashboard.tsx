@@ -161,11 +161,11 @@ export default function LeadsDashboard() {
               return (
                 <div
                   key={status}
-                  className={`flex flex-col bg-white rounded-lg border-2 transition-all min-h-80 flex-shrink-0 w-full ${
+                  className={`flex flex-col rounded-lg border-2 transition-all min-h-80 flex-shrink-0 w-full ${
                     dragOverStatus === status
-                      ? "border-blue-400 bg-blue-50 shadow-lg"
+                      ? "border-blue-400 shadow-lg"
                       : "border-slate-200"
-                  }`}
+                  } ${STATUS_BG_COLORS[status]}`}
                   onDragOver={(e) => handleDragOver(e, status)}
                   onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, status)}
