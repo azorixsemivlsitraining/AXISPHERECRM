@@ -12,6 +12,7 @@ import {
   handleAuthSignOut,
   handleAuthSession,
   handlePasswordReset,
+  handleDeleteAuthUser,
 } from "./routes/auth";
 import { handleUpdateLead, handleDeleteSalesperson } from "./routes/leads";
 
