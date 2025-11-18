@@ -101,13 +101,23 @@ export default function Salespersons() {
   };
 
   const handleCancel = () => {
-    setShowForm(false);
-    setEditingId(null);
     setFormData({
       name: "",
       email: "",
       phoneNumber: "",
     });
+    setEditingId(null);
+    setShowForm(false);
+  };
+
+  const closeForm = () => {
+    setFormData({
+      name: "",
+      email: "",
+      phoneNumber: "",
+    });
+    setEditingId(null);
+    setShowForm(false);
   };
 
   if (isLoading) {
